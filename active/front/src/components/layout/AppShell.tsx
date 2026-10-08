@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Header,
+  HeaderMenuButton,
   HeaderName,
   HeaderNavigation,
   HeaderMenuItem,
@@ -15,6 +16,8 @@ import {
   Content,
   Theme,
   Tag,
+  Breadcrumb,
+  BreadcrumbItem,
 } from '@carbon/react';
 import {
   Dashboard,
@@ -57,13 +60,19 @@ const NEXT_THEME: Record<ThemeMode, ThemeMode> = {
 };
 
 export default function AppShell({ children }: AppShellProps) {
-  const { citizenName, logout } = useAuth();
+  const { citizenName, citizenId, logout } = useAuth();
   const { mode, carbonTheme, setMode } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
+  const [navOpen, setNavOpen] = useState(() => window.innerWidth >= 1056);
 
   const ThemeIcon = THEME_ICONS[mode];
+  const currentNav = NAV_ITEMS.find((i) => i.path === location.pathname);
+
+  useEffect(() => {
+    document.title = `${currentNav?.label ?? 'Bürgerportal'} – Bürgerportal Musterstadt`;
+  }, [currentNav]);
 
   const handleLogout = async () => {
     await logout();
@@ -74,6 +83,13 @@ export default function AppShell({ children }: AppShellProps) {
     <Theme theme={carbonTheme}>
       <Header aria-label="Bürgerportal Musterstadt">
         <SkipToContent href="#main-content" />
+        <HeaderMenuButton
+          aria-label={navOpen ? 'Menü schließen' : 'Menü öffnen'}
+          isCollapsible
+          isActive={navOpen}
+          aria-expanded={navOpen}
+          onClick={() => setNavOpen((o) => !o)}
+        />
         <HeaderName prefix="Bürgerportal">Musterstadt</HeaderName>
         <HeaderNavigation aria-label="Hauptnavigation">
           {NAV_ITEMS.map((item) => (
@@ -105,7 +121,14 @@ export default function AppShell({ children }: AppShellProps) {
         </HeaderGlobalBar>
       </Header>
 
-      <SideNav aria-label="Seitennavigation" isFixedNav expanded={true}>
+      <SideNav
+        aria-label="Seitennavigation"
+        isFixedNav={navOpen}
+        expanded={navOpen}
+        isPersistent={navOpen}
+        onOverlayClick={() => setNavOpen(false)}
+        onSideNavBlur={() => undefined}
+      >
         <SideNavItems>
           <SideNavMenu title="Online-Dienste" defaultExpanded>
             {NAV_ITEMS.map((item) => (
@@ -157,7 +180,16 @@ export default function AppShell({ children }: AppShellProps) {
         </SideNavItems>
       </SideNav>
 
-      <Content id="main-content" style={{ minHeight: 'calc(100vh - 3rem)', display: 'flex', flexDirection: 'column' }}>
+      <Content
+        id="main-content"
+        style={{
+          minHeight: 'calc(100vh - 3rem)',
+          display: 'flex',
+          flexDirection: 'column',
+          marginInlineStart: navOpen ? undefined : 0,
+          transition: 'margin-inline-start 0.11s cubic-bezier(0.2, 0, 1, 0.9)',
+        }}
+      >
         <div style={{ flex: 1, paddingBottom: '2rem' }}>
           {citizenName && (
             <div
@@ -177,9 +209,19 @@ export default function AppShell({ children }: AppShellProps) {
                 <strong style={{ fontSize: '0.875rem' }}>{citizenName}</strong>
               </div>
               <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>
-                Bürger-ID: 1
+                Bürger-ID: {citizenId}
               </span>
             </div>
+          )}
+          {currentNav && (
+            <Breadcrumb noTrailingSlash style={{ marginBottom: '1rem' }}>
+              <BreadcrumbItem href="/dashboard" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/dashboard'); }}>
+                Bürgerportal
+              </BreadcrumbItem>
+              {currentNav.path !== '/dashboard' && (
+                <BreadcrumbItem isCurrentPage>{currentNav.label}</BreadcrumbItem>
+              )}
+            </Breadcrumb>
           )}
           <ErrorBoundary>
             {children}

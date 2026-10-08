@@ -2,11 +2,12 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { authService } from '@/services/authService';
-import { storeToken, clearToken, getStoredToken } from '@/services/http';
+import { storeToken, clearToken, getStoredToken, UNAUTHORIZED_EVENT } from '@/services/http';
 import type { LoginRequest } from '@/types/api';
 
 interface AuthState {
@@ -47,6 +48,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     sessionStorage.removeItem('bp_citizen_id');
     sessionStorage.removeItem('bp_citizen_name');
     setState({ token: null, citizenId: null, citizenName: null });
+  }, []);
+
+  // Session expired / token rejected by backend → drop auth state so ProtectedRoute redirects to /login
+  useEffect(() => {
+    const onUnauthorized = () => {
+      sessionStorage.removeItem('bp_citizen_id');
+      sessionStorage.removeItem('bp_citizen_name');
+      setState({ token: null, citizenId: null, citizenName: null });
+    };
+    window.addEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
   }, []);
 
   const value = useMemo<AuthContextValue>(

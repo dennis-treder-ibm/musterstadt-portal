@@ -3,6 +3,7 @@ import type { ApiError } from '@/types/api';
 
 const BASE_URL = '/api';
 const TOKEN_KEY = 'bp_token';
+export const UNAUTHORIZED_EVENT = 'bp:unauthorized';
 
 export function getStoredToken(): string | null {
   return sessionStorage.getItem(TOKEN_KEY);
@@ -42,6 +43,7 @@ http.interceptors.response.use(
     // 401 → clear stale token; AuthContext will redirect
     if (status === 401) {
       clearToken();
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     }
 
     const normalised: ApiError = { error: apiMessage, status };
