@@ -4,11 +4,12 @@ import com.musterstadt.model.*;
 import com.musterstadt.model.Application.ApplicationStatus;
 import com.musterstadt.model.Application.ApplicationType;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -17,17 +18,16 @@ import java.util.logging.Logger;
  * Fires on startup and seeds the database with realistic German test data.
  * Uses JPA directly — no DAO layer here to avoid circular dependency during startup.
  */
-@Singleton
-@Startup
+@ApplicationScoped
 public class DataInitializer {
 
     private static final Logger LOGGER = Logger.getLogger(DataInitializer.class.getName());
 
     @PersistenceContext(unitName = "BuergerportalPU")
-    private EntityManager em;
+    EntityManager em;
 
-    @PostConstruct
-    public void init() {
+    @Transactional
+    void onStart(@Observes StartupEvent ev) {
         createSchema();
 
         long count = (Long) em.createQuery("SELECT COUNT(c) FROM Citizen c").getSingleResult();
@@ -139,10 +139,9 @@ public class DataInitializer {
     }
 
     /**
-     * Creates the schema via native DDL. Called after the component context is
-     * fully live, so Liberty provides a real connection (not a stub).
-     * hbm2ddl.auto=none prevents Hibernate from attempting this at SessionFactory
-     * init time when only a GenericConnection stub is available.
+     * Creates the schema via native DDL.
+     * hbm2ddl.auto=none — Quarkus manages schema via Hibernate's drop-and-create on start.
+     * We do this manually to match the original Liberty behaviour exactly.
      */
     private void createSchema() {
         // Drop in reverse FK order
