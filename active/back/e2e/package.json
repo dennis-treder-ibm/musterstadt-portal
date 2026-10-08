@@ -1,0 +1,19 @@
+{
+  "name": "ui-tests",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.64.0",
+    "playwright": "^1.64.0"
+  }
+}

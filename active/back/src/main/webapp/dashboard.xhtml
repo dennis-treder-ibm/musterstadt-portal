@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="de">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="pageTitle">Startseite</ui:define>
+
+    <ui:define name="content">
+
+        <div style="padding: 15px;">
+
+            <!-- Page heading -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                    <td>
+                        <h2 style="margin: 0; font-size: 16px; color: #003399; border-bottom: 2px solid #003399; padding-bottom: 5px;">
+                            Willkommen im Bürgerportal Musterstadt
+                        </h2>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Welcome message -->
+            <table width="100%" border="0" cellpadding="5" cellspacing="0"
+                   style="margin-bottom: 15px; background: #f0f4ff; border: 1px solid #ccddff;">
+                <tr>
+                    <td style="font-size: 12px; color: #333333; line-height: 1.6;">
+                        Guten Tag! Sie sind angemeldet als <strong>#{loginBean.username}</strong>.<br/>
+                        Hier finden Sie eine Übersicht über die verfügbaren Online-Dienste der Stadt Musterstadt.
+                        Bitte wählen Sie den gewünschten Service aus der Navigation links.
+                    </td>
+                </tr>
+            </table>
+
+            <!-- ============================================================
+                 STATISTICS TABLE
+                 Redundant nested tables for spacing — legacy pattern
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 15px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Übersicht: Aktuelle Zahlen
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <table width="100%" border="1" cellpadding="6" cellspacing="0"
+                   style="border-collapse: collapse; border-color: #cccccc; margin-bottom: 18px; font-size: 12px;">
+                <thead>
+                    <tr style="background: linear-gradient(#e0e8ff, #c8d8ff);">
+                        <th style="text-align: left; padding: 6px 10px; border: 1px solid #999999; color: #003399;">
+                            Parkausweise
+                        </th>
+                        <th style="text-align: left; padding: 6px 10px; border: 1px solid #999999; color: #003399;">
+                            Hundeanmeldungen
+                        </th>
+                        <th style="text-align: left; padding: 6px 10px; border: 1px solid #999999; color: #003399;">
+                            Offene Anträge
+                        </th>
+                        <th style="text-align: left; padding: 6px 10px; border: 1px solid #999999; color: #003399;">
+                            Genehmigte Anträge
+                        </th>
+                        <th style="text-align: left; padding: 6px 10px; border: 1px solid #999999; color: #003399;">
+                            Abgelehnte Anträge
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ffffff;">
+                        <td style="padding: 8px 10px; border: 1px solid #cccccc; font-size: 18px; font-weight: bold; color: #003399;">
+                            <h:outputText value="#{dashboardBean.parkingPermitCount}" />
+                        </td>
+                        <td style="padding: 8px 10px; border: 1px solid #cccccc; font-size: 18px; font-weight: bold; color: #003399;">
+                            <h:outputText value="#{dashboardBean.dogRegistrationCount}" />
+                        </td>
+                        <td style="padding: 8px 10px; border: 1px solid #cccccc; font-size: 18px; font-weight: bold; color: #cc6600;">
+                            <h:outputText value="#{dashboardBean.openApplicationCount}" />
+                        </td>
+                        <td style="padding: 8px 10px; border: 1px solid #cccccc; font-size: 18px; font-weight: bold; color: #006600;">
+                            <h:outputText value="#{dashboardBean.approvedCount}" />
+                        </td>
+                        <td style="padding: 8px 10px; border: 1px solid #cccccc; font-size: 18px; font-weight: bold; color: #cc0000;">
+                            <h:outputText value="#{dashboardBean.rejectedCount}" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Spacer table — authentic legacy technique -->
+            <table width="100%" border="0"><tr><td height="5"></td></tr></table>
+
+            <!-- ============================================================
+                 RECENT ACTIVITY TABLE
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Letzte Vorgänge
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <h:dataTable value="#{dashboardBean.recentActivity}"
+                         var="app"
+                         width="100%"
+                         border="1"
+                         cellpadding="6"
+                         cellspacing="0"
+                         style="border-collapse: collapse; border-color: #cccccc; font-size: 12px;"
+                         headerClass="tableHeader"
+                         rowClasses="tableRowEven, tableRowOdd">
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Datum</span>
+                    </f:facet>
+                    <h:outputText value="#{app.createdDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"
+                                           timeZone="Europe/Berlin" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Vorgang</span>
+                    </f:facet>
+                    <h:outputText value="#{app.typeDisplay}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Status</span>
+                    </f:facet>
+                    <h:outputText value="#{app.statusDisplay}"
+                                  style="#{app.status == 'APPROVED' ? 'color: #006600;' :
+                                           app.status == 'REJECTED' ? 'color: #cc0000;' :
+                                           'color: #cc6600;'}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Zuletzt geändert</span>
+                    </f:facet>
+                    <h:outputText value="#{app.lastUpdated}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"
+                                           timeZone="Europe/Berlin" />
+                    </h:outputText>
+                </h:column>
+
+            </h:dataTable>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="10"></td></tr></table>
+
+            <!-- ============================================================
+                 QUICK LINKS — redundant nested tables
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 5px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Schnellzugriff
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <table width="100%" border="0" cellpadding="0" cellspacing="8">
+                <tr>
+                    <td width="220">
+                        <table width="220" border="1" cellpadding="8" cellspacing="0"
+                               style="border-color: #ccddff; background: #f8f9ff;">
+                            <tr>
+                                <td style="font-size: 12px;">
+                                    <p style="margin: 0; font-weight: bold; color: #003399;">Parkausweis beantragen</p>
+                                    <p style="margin: 4px 0 8px 0; color: #555555; font-size: 11px;">
+                                        Antrag auf Parkausweis für Ihr Fahrzeug stellen.
+                                    </p>
+                                    <h:link outcome="/parking/parkingPermit"
+                                            value="Zum Antrag »"
+                                            style="color: #000080; font-size: 11px;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="20"></td>
+                    <td width="220">
+                        <table width="220" border="1" cellpadding="8" cellspacing="0"
+                               style="border-color: #ccddff; background: #f8f9ff;">
+                            <tr>
+                                <td style="font-size: 12px;">
+                                    <p style="margin: 0; font-weight: bold; color: #003399;">Adressänderung melden</p>
+                                    <p style="margin: 4px 0 8px 0; color: #555555; font-size: 11px;">
+                                        Neue Adresse bei der Meldebehörde anzeigen.
+                                    </p>
+                                    <h:link outcome="/address/addressChange"
+                                            value="Zur Adressänderung »"
+                                            style="color: #000080; font-size: 11px;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="20"></td>
+                    <td width="220">
+                        <table width="220" border="1" cellpadding="8" cellspacing="0"
+                               style="border-color: #ccddff; background: #f8f9ff;">
+                            <tr>
+                                <td style="font-size: 12px;">
+                                    <p style="margin: 0; font-weight: bold; color: #003399;">Hund anmelden</p>
+                                    <p style="margin: 4px 0 8px 0; color: #555555; font-size: 11px;">
+                                        Ihren Hund bei der Stadt registrieren lassen.
+                                    </p>
+                                    <h:link outcome="/dog/dogRegistration"
+                                            value="Zur Hundeanmeldung »"
+                                            style="color: #000080; font-size: 11px;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="20"></td></tr></table>
+
+            <!-- Notice box about unavailable feature -->
+            <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                   style="border-color: #ffdd88; background: #fffbee; border-collapse: collapse;">
+                <tr>
+                    <td style="font-size: 11px; color: #886600;">
+                        <strong>Hinweis:</strong> Der Bereich <strong>Hochwasserhilfe</strong>
+                        befindet sich derzeit in Entwicklung und steht demnächst zur Verfügung.
+                        Bei dringenden Anfragen wenden Sie sich bitte telefonisch an die Stadtverwaltung.
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

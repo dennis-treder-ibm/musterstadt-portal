@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="de">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="pageTitle">Hundeanmeldung</ui:define>
+
+    <ui:define name="content">
+
+        <div style="padding: 15px;">
+
+            <!-- Page heading -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                    <td>
+                        <h2 style="margin: 0; font-size: 16px; color: #003399;
+                                   border-bottom: 2px solid #003399; padding-bottom: 5px;">
+                            Hundeanmeldung
+                        </h2>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size: 12px; color: #333333; margin: 0 0 12px 0;">
+                Melden Sie Ihren Hund bei der Stadtverwaltung Musterstadt an.
+                Die Hundesteuerpflicht entsteht mit dem Tag der Anmeldung.
+                Bitte halten Sie den Chip-Nummern-Nachweis bereit.
+            </p>
+
+            <!-- Success message -->
+            <h:panelGroup rendered="#{not empty dogRegistrationBean.successMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #88cc88; background: #eeffee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 12px; color: #005500;">
+                            <h:outputText value="#{dogRegistrationBean.successMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- Error message -->
+            <h:panelGroup rendered="#{not empty dogRegistrationBean.errorMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #cc8888; background: #ffeeee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 11px; color: red;">
+                            <h:outputText value="#{dogRegistrationBean.errorMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- ============================================================
+                 REGISTRATION FORM
+                 ============================================================ -->
+            <h:form id="dogForm">
+
+                <table width="600" border="1" cellpadding="6" cellspacing="0"
+                       style="border-collapse: collapse; border-color: #cccccc; margin-bottom: 15px; font-size: 12px;">
+                    <thead>
+                        <tr style="background: linear-gradient(#e0e8ff, #c8d8ff);">
+                            <th colspan="2" style="text-align: left; padding: 8px 10px; color: #003399; font-size: 13px;">
+                                Hund anmelden
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- Dog name -->
+                        <tr style="background: #ffffff;">
+                            <td width="220" style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="dogForm:dogName">Hundename: *</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="dogName"
+                                             value="#{dogRegistrationBean.dogName}"
+                                             size="30"
+                                             maxlength="100"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Breed -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="dogForm:breed">Rasse:</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="breed"
+                                             value="#{dogRegistrationBean.breed}"
+                                             size="30"
+                                             maxlength="100"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                                <span style="font-size: 10px; color: #888888;">
+                                    &#160;z.B. Schäferhund, Labrador, Dackel
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Owner info (read-only display) -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label>Besitzer:</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc; color: #555555;">
+                                <h:outputText value="#{loginBean.username}" />
+                                <span style="font-size: 10px; color: #888888;">&#160;(angemeldeter Benutzer)</span>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Chip number -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="dogForm:chipNumber">Chip-Nummer:</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="chipNumber"
+                                             value="#{dogRegistrationBean.chipNumber}"
+                                             size="20"
+                                             maxlength="50"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                                <span style="font-size: 10px; color: #888888;">&#160;(15-stellig, ISO 11784)</span>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <tr style="background: #fafafa;">
+                            <td colspan="2" style="padding: 4px 10px; border: 1px solid #cccccc;
+                                                   font-size: 10px; color: #888888;">
+                                * Pflichtfelder
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Button -->
+                        <tr style="background: #f0f4ff;">
+                            <td colspan="2" style="padding: 10px; border: 1px solid #cccccc; text-align: right;">
+                                <h:commandButton value="Hund anmelden"
+                                                 action="#{dogRegistrationBean.registerDog}"
+                                                 style="background: #003399; color: #ffffff; border: 1px solid #001166;
+                                                        padding: 4px 18px; font-size: 12px; cursor: pointer;" />
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </h:form>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="10"></td></tr></table>
+
+            <!-- ============================================================
+                 SEARCH FORM
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Registrierte Hunde suchen
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <h:form id="searchForm">
+                <table border="0" cellpadding="4" cellspacing="0" style="font-size: 12px; margin-bottom: 10px;">
+                    <tr>
+                        <td>
+                            <label for="searchForm:searchQuery">Suche:</label>
+                        </td>
+                        <td style="padding-left: 6px;">
+                            <h:inputText id="searchQuery"
+                                         value="#{dogRegistrationBean.searchQuery}"
+                                         size="30"
+                                         style="font-size: 12px; border: 1px solid #999999; padding: 2px;"
+                                         placeholder="Hundename oder Rasse..." />
+                        </td>
+                        <td style="padding-left: 6px;">
+                            <h:commandButton value="Suchen"
+                                             action="#{dogRegistrationBean.search}"
+                                             style="background: #003399; color: #ffffff; border: 1px solid #001166;
+                                                    padding: 3px 14px; font-size: 12px; cursor: pointer;
+                                                    margin-right: 6px;" />
+                            <h:commandButton value="Zurücksetzen"
+                                             action="#{dogRegistrationBean.clearSearch}"
+                                             style="background: #888888; color: #ffffff; border: 1px solid #555555;
+                                                    padding: 3px 14px; font-size: 12px; cursor: pointer;" />
+                        </td>
+                    </tr>
+                </table>
+            </h:form>
+
+            <!-- ============================================================
+                 DOG REGISTRATION TABLE — PrimeFaces p:dataTable with pagination
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Registrierte Hunde
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <h:form id="dogTableForm">
+                <p:dataTable value="#{dogRegistrationBean.results}"
+                             var="dog"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,25"
+                             style="font-size: 12px; width: 100%;"
+                             tableStyle="width: 100%;"
+                             emptyMessage="Keine Einträge gefunden."
+                             sortMode="single">
+
+                    <f:facet name="header">
+                        <span style="font-size: 13px; color: #003399;">Meine registrierten Hunde</span>
+                    </f:facet>
+
+                    <p:column headerText="Reg.-Nr." sortBy="#{dog.id}" style="width: 80px;">
+                        <h:outputText value="#{dog.id}" />
+                    </p:column>
+
+                    <p:column headerText="Hundename" sortBy="#{dog.dogName}">
+                        <h:outputText value="#{dog.dogName}" />
+                    </p:column>
+
+                    <p:column headerText="Rasse" sortBy="#{dog.breed}">
+                        <h:outputText value="#{dog.breed}" />
+                    </p:column>
+
+                    <p:column headerText="Anmeldedatum" sortBy="#{dog.registrationDate}" style="width: 120px;">
+                        <h:outputText value="#{dog.registrationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy"
+                                               timeZone="Europe/Berlin" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Chip-Nummer" style="width: 160px;">
+                        <h:outputText value="#{dog.chipNumber}" />
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="15"></td></tr></table>
+
+            <!-- Info box -->
+            <table width="100%" border="0" cellpadding="8" cellspacing="0"
+                   style="background: #f8f8f8; border: 1px solid #dddddd; font-size: 11px; color: #555555;">
+                <tr>
+                    <td>
+                        <p style="margin: 0; font-weight: bold;">Hundesteuer-Information:</p>
+                        <table border="0" cellpadding="2" cellspacing="0" style="margin-top: 6px;">
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Erster Hund: 60,00 € / Jahr</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Zweiter Hund: 90,00 € / Jahr</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Kampfhunde nach § 1 der Kampfhundeverordnung: 900,00 € / Jahr</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Blindenhunde und Therapiehunde: befreit</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>
