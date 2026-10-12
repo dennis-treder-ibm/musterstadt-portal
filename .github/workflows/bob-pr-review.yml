@@ -1,0 +1,58 @@
+name: Bob PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  bob-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so bob can diff properly
+
+      - name: Install Bob Shell
+        run: |
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Generate PR diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
+
+      - name: Run Bob PR review
+        id: bob_review
+        run: |
+          DIFF=$(cat /tmp/pr.diff)
+          REVIEW=$(bob \
+            --accept-license \
+            --auth-method api-key \
+            --hide-intermediary-output \
+            run "Review this PR diff. Flag bugs, security issues, and logic errors. \
+                Be concise — one line per finding: [file:line] severity: description. \
+                Skip style nits unless they mask a real problem.\n\n${DIFF}")
+          echo "review<<EOF" >> $GITHUB_OUTPUT
+          echo "$REVIEW" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+
+      - name: Post review as PR comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const review = `${{ steps.bob_review.outputs.review }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `## 🤖 Bob Shell PR Review\n\n${review}`
+            });
