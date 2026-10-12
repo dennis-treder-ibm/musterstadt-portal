@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      lang="de">
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Anmelden — Bürgerportal Musterstadt</title>
+    <h:outputStylesheet library="css" name="portal.css" />
+    <style type="text/css">
+        #loginBox {
+            width: 380px;
+            margin: 60px auto 0 auto;
+            border: 1px solid #cccccc;
+            background: #ffffff;
+            padding: 0;
+        }
+        #loginBox .loginHeader {
+            background: linear-gradient(#003399, #0055cc);
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #loginBox .loginBody {
+            padding: 20px 16px;
+        }
+        #loginBox table td {
+            padding: 4px 6px;
+            font-size: 12px;
+        }
+        #loginBox .btnAnmelden {
+            background: #003399;
+            color: #ffffff;
+            border: 1px solid #001166;
+            padding: 4px 18px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        #loginBox .btnAnmelden:hover {
+            background: #0044aa;
+        }
+        .hinweis {
+            font-size: 11px;
+            color: #666666;
+            margin-top: 12px;
+            border-top: 1px solid #eeeeee;
+            padding-top: 8px;
+        }
+    </style>
+</h:head>
+<h:body style="background: #e8e8e8; font-family: Arial, Tahoma, sans-serif;">
+
+<div style="text-align: center; padding-top: 20px;">
+    <!-- Header strip — outside the main portal layout on the login page -->
+    <div style="width: 960px; margin: 0 auto; background: linear-gradient(#003399, #0055cc);
+                padding: 10px 16px; text-align: left;">
+        <span style="color: #ffffff; font-size: 18px; font-weight: bold;">
+            Bürgerportal Musterstadt
+        </span>
+        <span style="color: #aabbff; font-size: 11px; margin-left: 20px;">
+            Ihr digitales Rathaus
+        </span>
+    </div>
+</div>
+
+<div id="loginBox">
+    <div class="loginHeader">Anmeldung am Bürgerportal</div>
+    <div class="loginBody">
+
+        <h:form id="loginForm">
+
+            <!-- Error message — inline style for red, no ARIA role, no sr-only text -->
+            <h:panelGroup rendered="#{not empty loginBean.errorMessage}">
+                <p style="color: red; font-size: 11px; margin: 0 0 10px 0; padding: 5px;
+                           border: 1px solid #ffaaaa; background: #fff5f5;">
+                    <h:outputText value="#{loginBean.errorMessage}" />
+                </p>
+            </h:panelGroup>
+
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td width="120"><label for="loginForm:username">Benutzername:</label></td>
+                    <td>
+                        <h:inputText id="username"
+                                     value="#{loginBean.username}"
+                                     size="25"
+                                     style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                    </td>
+                </tr>
+                <tr><td colspan="2" height="6"></td></tr>
+                <tr>
+                    <td><label for="loginForm:password">Kennwort:</label></td>
+                    <td>
+                        <h:inputSecret id="password"
+                                       value="#{loginBean.password}"
+                                       size="25"
+                                       style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                    </td>
+                </tr>
+                <tr><td colspan="2" height="14"></td></tr>
+                <tr>
+                    <td colspan="2" align="right">
+                        <h:commandButton value="Anmelden"
+                                         action="#{loginBean.login}"
+                                         styleClass="btnAnmelden" />
+                    </td>
+                </tr>
+            </table>
+
+            <div class="hinweis">
+                <p style="margin: 0;">Hinweis: Bitte melden Sie sich mit Ihren Zugangsdaten an.</p>
+                <p style="margin: 4px 0 0 0; color: #999999;">
+                    Passwort vergessen?
+                    <a href="#" style="color: #000080;">Bitte wenden Sie sich an die Stadtverwaltung.</a>
+                </p>
+            </div>
+
+        </h:form>
+
+    </div>
+</div>
+
+<div style="width: 380px; margin: 10px auto; text-align: center; font-size: 10px; color: #888888;">
+    &#169; 2024 Stadtverwaltung Musterstadt &#160;|&#160;
+    <a href="#" style="color: #000080;">Impressum</a> &#160;|&#160;
+    <a href="#" style="color: #000080;">Datenschutz</a>
+</div>
+
+</h:body>
+</html>
