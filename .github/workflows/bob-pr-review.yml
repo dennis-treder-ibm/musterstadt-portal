@@ -227,7 +227,7 @@ jobs:
               "$PROMPT" 2>&1);
             echo "In directory: $(pwd) the following review file was generated..."
             cat bob-review.md
-            echo "Bob Shell completed successfully."
+            echo "Bob Shell completed successfully." then
           else
             STATUS=$?
             echo "::error::Bob Shell failed with exit code $STATUS"
