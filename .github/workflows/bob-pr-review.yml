@@ -224,7 +224,7 @@ jobs:
           PROMPT="${REVIEW}"$'\n\n'"PR Diff:"$'\n'"${DIFF}"
           if OUTPUT=$(bob run \
               --accept-license \
-              --workspace $GITHUB_WORKSPACE
+              --workspace $GITHUB_WORKSPACE \
               --trust \
               "$PROMPT" 2>&1); then
             echo "In directory: $(pwd) the following review file was generated..."
