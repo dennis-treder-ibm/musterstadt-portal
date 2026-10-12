@@ -67,6 +67,15 @@ export default function AppShell({ children }: AppShellProps) {
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const [navOpen, setNavOpen] = useState(() => window.innerWidth >= 1056);
 
+  // Sync SideNav with viewport: collapse on mobile, restore on desktop
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1056px)');
+    const handler = () => setNavOpen(mql.matches);
+    setNavOpen(mql.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
   const ThemeIcon = THEME_ICONS[mode];
   const currentNav = NAV_ITEMS.find((i) => i.path === location.pathname);
 
@@ -183,7 +192,7 @@ export default function AppShell({ children }: AppShellProps) {
       <Content
         id="main-content"
         style={{
-          minHeight: 'calc(100vh - 3rem)',
+          minHeight: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           marginInlineStart: navOpen ? undefined : 0,

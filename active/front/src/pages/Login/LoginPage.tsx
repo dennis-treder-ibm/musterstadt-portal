@@ -55,7 +55,7 @@ export default function LoginPage() {
     <Theme theme={carbonTheme}>
       <div
         style={{
-          minHeight: '100vh',
+          minHeight: '100dvh',
           display: 'flex',
           flexDirection: 'column',
           background: 'var(--cds-background)',
