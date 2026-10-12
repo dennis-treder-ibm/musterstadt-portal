@@ -34,8 +34,7 @@ jobs:
           DIFF=$(cat /tmp/pr.diff)
           REVIEW=$(bob \
             --accept-license \
-            --auth-method api-key \
-            --hide-intermediary-output \
+            --trust \
             run "Review this PR diff. Flag bugs, security issues, and logic errors. \
                 Be concise — one line per finding: [file:line] severity: description. \
                 Skip style nits unless they mask a real problem.\n\n${DIFF}")
