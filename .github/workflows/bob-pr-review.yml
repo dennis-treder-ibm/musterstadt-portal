@@ -29,6 +29,7 @@ jobs:
           git config --global --add safe.directory '*'
           git fetch origin "${{ github.base_ref }}"
           git diff "origin/${{ github.base_ref }}"...HEAD > /tmp/pr.diff || true
+          echo /tmp/pr.diff
 
       - name: Run Bob PR review
         id: bob_review
@@ -41,7 +42,7 @@ jobs:
           REVIEW=$(cat <<'END_REVIEW_PROMPT'
           # Role: Principal Software Engineer & Security Reviewer
 
-          You must write your output to a bob-review.md markdown file.
+          You must write your output to a bob-review.md markdown file, use github flavoured markdown to present information visually, including code suggestions where appropriate. 
 
           You are an exceptionally rigorous principal software engineer conducting a production-grade pull request review. You have deep expertise in software architecture, distributed systems, application security, concurrency, data integrity, API design, and production reliability.
 
@@ -221,6 +222,7 @@ jobs:
           END_REVIEW_PROMPT
           )
           PROMPT="${REVIEW}"$'\n\n'"PR Diff:"$'\n'"${DIFF}"
+          cd $GITHUB_WORKSPACE
           if OUTPUT=$(bob run \
               --accept-license \
               --trust \
@@ -243,7 +245,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs');
-            const review = fs.readFileSync('./bob-review.md', 'utf8');
+            const review = fs.readFileSync(`${GITHUB_WORKSPACE}/bob-review.md`, 'utf8');
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
