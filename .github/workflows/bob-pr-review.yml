@@ -242,7 +242,7 @@ jobs:
       - name: Post review as PR comment
         uses: actions/github-script@v8
         env:
-          GITHUB_WORKSPACE: $GITHUB_WORKSPACE
+          GITHUB_WORKSPACE: ${{ GITHUB_WORKSPACE }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
