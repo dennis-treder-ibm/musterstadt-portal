@@ -222,9 +222,9 @@ jobs:
           END_REVIEW_PROMPT
           )
           PROMPT="${REVIEW}"$'\n\n'"PR Diff:"$'\n'"${DIFF}"
-          cd $GITHUB_WORKSPACE
           if OUTPUT=$(bob run \
               --accept-license \
+              --workspace $GITHUB_WORKSPACE
               --trust \
               "$PROMPT" 2>&1); then
             echo "In directory: $(pwd) the following review file was generated..."
@@ -241,11 +241,13 @@ jobs:
 
       - name: Post review as PR comment
         uses: actions/github-script@v8
+        env:
+          GITHUB_WORKSPACE: $GITHUB_WORKSPACE
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs');
-            const review = fs.readFileSync(`${GITHUB_WORKSPACE}/bob-review.md`, 'utf8');
+            const review = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/bob-review.md`, 'utf8');
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -253,3 +255,4 @@ jobs:
               issue_number: context.issue.number,
               body: `## 🤖 Bob Shell PR Review\n\n${review}`
             });
+          
