@@ -19,9 +19,10 @@ jobs:
 
       - name: Install Bob Shell
         run: |
-          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh \
+            --output /tmp/bobshell.sh
+          bash /tmp/bobshell.sh --package-manager npm
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       - name: Generate PR diff
         run: |
           git fetch origin ${{ github.base_ref }}
