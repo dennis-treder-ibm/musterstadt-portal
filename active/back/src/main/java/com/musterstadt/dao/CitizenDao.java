@@ -2,13 +2,14 @@ package com.musterstadt.dao;
 
 import com.musterstadt.model.Citizen;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Stateless
+@ApplicationScoped
 public class CitizenDao {
 
     private static final Logger LOGGER = Logger.getLogger(CitizenDao.class.getName());
@@ -45,6 +46,7 @@ public class CitizenDao {
                 .getResultList();
     }
 
+    @Transactional
     public Citizen save(Citizen citizen) {
         if (citizen.getId() == null) {
             em.persist(citizen);
@@ -54,6 +56,7 @@ public class CitizenDao {
         }
     }
 
+    @Transactional
     public Citizen update(Citizen citizen) {
         return em.merge(citizen);
     }

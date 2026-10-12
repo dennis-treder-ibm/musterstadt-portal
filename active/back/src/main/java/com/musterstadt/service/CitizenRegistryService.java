@@ -2,7 +2,7 @@ package com.musterstadt.service;
 
 import com.musterstadt.util.CitizenRegistryResponse;
 
-import javax.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.logging.Logger;
 
 /**
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *
  * TODO: Migrate from SOAP to REST (see Jira PORTAL-88, created 2019, still open)
  */
-@Stateless
+@ApplicationScoped
 public class CitizenRegistryService {
 
     private static final Logger LOGGER = Logger.getLogger(CitizenRegistryService.class.getName());

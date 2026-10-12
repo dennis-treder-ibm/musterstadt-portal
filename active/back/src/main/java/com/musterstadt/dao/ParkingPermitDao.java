@@ -2,13 +2,14 @@ package com.musterstadt.dao;
 
 import com.musterstadt.model.ParkingPermit;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
-@Stateless
+@ApplicationScoped
 public class ParkingPermitDao {
 
     @PersistenceContext(unitName = "BuergerportalPU")
@@ -42,6 +43,7 @@ public class ParkingPermitDao {
                 .getResultList();
     }
 
+    @Transactional
     public ParkingPermit save(ParkingPermit permit) {
         if (permit.getId() == null) {
             em.persist(permit);
@@ -51,6 +53,7 @@ public class ParkingPermitDao {
         }
     }
 
+    @Transactional
     public ParkingPermit update(ParkingPermit permit) {
         return em.merge(permit);
     }

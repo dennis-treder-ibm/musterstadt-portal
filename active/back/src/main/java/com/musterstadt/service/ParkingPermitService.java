@@ -9,31 +9,33 @@ import com.musterstadt.model.Application.ApplicationType;
 import com.musterstadt.model.Citizen;
 import com.musterstadt.model.ParkingPermit;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Stateless
+@ApplicationScoped
 public class ParkingPermitService {
 
     private static final Logger LOGGER = Logger.getLogger(ParkingPermitService.class.getName());
 
-    @EJB
-    private ApplicationDao applicationDao;
+    @Inject
+    ApplicationDao applicationDao;
 
-    @EJB
-    private CitizenDao citizenDao;
+    @Inject
+    CitizenDao citizenDao;
 
-    @EJB
-    private ParkingPermitDao parkingPermitDao;
+    @Inject
+    ParkingPermitDao parkingPermitDao;
 
     /**
      * Creates a new parking permit application for the given citizen.
      * Validation is mixed in here — see TODO below.
      */
+    @Transactional
     public Application createApplication(Long citizenId, String vehicleRegistration,
                                          String zone, String proofDocumentPath) {
         // TODO: Move validation out of service layer into a dedicated validator
@@ -59,6 +61,7 @@ public class ParkingPermitService {
         return app;
     }
 
+    @Transactional
     public Application updateApplication(Long citizenId, Long applicationId, ApplicationStatus newStatus) {
         // TODO: Add workflow validation — can't go from REJECTED back to APPROVED
         Application app = applicationDao.findByCitizenId(citizenId).stream()
@@ -69,14 +72,6 @@ public class ParkingPermitService {
         app.setStatus(newStatus);
         app.setLastUpdated(new Date());
         return applicationDao.update(app);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Application> getApplicationsByPostcode(Long citizenId, String postcode) {
-        // ponytail: postcode filter not enforced at DB level — upgrade path is a join query
-        return applicationDao.findByCitizenId(citizenId).stream()
-                .filter(a -> a.getType() == ApplicationType.PARKING)
-                .collect(java.util.stream.Collectors.toList());
     }
 
     public List<String> getZones() {
