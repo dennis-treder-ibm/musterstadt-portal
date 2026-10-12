@@ -61,7 +61,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs');
-            const review = fs.readFileSync('./bob-review.txt', 'utf8');
+            const review = fs.readFileSync('./bob-review.md', 'utf8');
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
