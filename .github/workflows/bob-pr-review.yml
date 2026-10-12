@@ -23,6 +23,7 @@ jobs:
             --output /tmp/bobshell.sh
           bash /tmp/bobshell.sh --package-manager npm
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Generate PR diff
         run: |
           git config --global --add safe.directory '*'
