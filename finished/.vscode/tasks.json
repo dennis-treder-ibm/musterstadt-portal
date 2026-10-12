@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "launch-fullstack",
+      "dependsOn": ["start-backend", "start-frontend"],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "start-backend",
+      "type": "shell",
+      "command": "cd /Users/francispowlesland/ALL-PROJECTS/CE-PROJECTS/PUBLIC-SAFETY/SCCON/gov-portal-modernization/active/back && mvn quarkus:dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "fullstack",
+        "label": "Backend (Quarkus :8080)"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "quarkus",
+        "pattern": {
+          "regexp": "^.*$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Quarkus.*",
+          "endsPattern": "^.*started in.*|^.*Listening on.*"
+        }
+      }
+    },
+    {
+      "label": "start-frontend",
+      "type": "shell",
+      "command": "cd /Users/francispowlesland/ALL-PROJECTS/CE-PROJECTS/PUBLIC-SAFETY/SCCON/gov-portal-modernization/active/front && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "fullstack",
+        "label": "Frontend (React :5173)"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": "^.*$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*vite.*|^.*VITE.*",
+          "endsPattern": "^.*Local.*http.*|^.*ready in.*"
+        }
+      }
+    }
+  ]
+}
