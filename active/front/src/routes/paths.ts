@@ -13,6 +13,7 @@ export const ROUTES = {
   parking: '/parking',
   address: '/address',
   dogs: '/dogs',
+  citizen: '/citizen',
 } as const
 
 export interface NavItem {
@@ -28,5 +29,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Parkausweis', path: ROUTES.parking },
   { label: 'Adressänderung', path: ROUTES.address },
   { label: 'Hundeanmeldung', path: ROUTES.dogs },
+  { label: 'Bürgerprofil', path: ROUTES.citizen },
   { label: 'Hochwasserhilfe', path: '#', disabled: true, hint: 'Demnächst verfügbar' },
 ]

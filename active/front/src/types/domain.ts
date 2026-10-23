@@ -111,3 +111,12 @@ export interface DashboardSummary {
   addressApplicationCount: number
   recentActivity: RecentActivityItem[]
 }
+
+// --- Citizen Registry -------------------------------------------------------
+
+export interface CitizenRegistryResponse {
+  found: boolean
+  citizenId: string | null
+  fullName: string | null
+  verifiedAddress: string | null
+}

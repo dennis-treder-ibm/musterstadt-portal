@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { AddressPage } from '@/pages/AddressPage'
+import { CitizenPage } from '@/pages/CitizenPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { DogsPage } from '@/pages/DogsPage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -25,6 +26,7 @@ export const routes: RouteObject[] = [
           { path: ROUTES.parking, element: <ParkingPage /> },
           { path: ROUTES.address, element: <AddressPage /> },
           { path: ROUTES.dogs, element: <DogsPage /> },
+          { path: ROUTES.citizen, element: <CitizenPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
