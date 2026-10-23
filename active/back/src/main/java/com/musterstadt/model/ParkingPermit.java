@@ -1,6 +1,6 @@
 package com.musterstadt.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "PARKING_PERMIT")
