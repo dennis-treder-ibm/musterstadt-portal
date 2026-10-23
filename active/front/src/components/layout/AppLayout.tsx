@@ -6,8 +6,10 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
@@ -78,13 +80,40 @@ export function AppLayout() {
         <NavList onNavigate={() => setMobileOpen(false)} />
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
+      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <Toolbar />
-        <Container maxWidth="lg" sx={{ py: 3 }}>
+        <Container maxWidth="lg" sx={{ py: 3, flexGrow: 1 }}>
           <ErrorBoundary resetKeys={[location.pathname]}>
             <Outlet />
           </ErrorBoundary>
         </Container>
+
+        {/* Footer */}
+        <Divider />
+        <Box
+          component="footer"
+          sx={{
+            py: 1.5,
+            px: 3,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: { xs: 1, sm: 0 },
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="caption" color="text.secondary">
+            © 2024 Stadtverwaltung Musterstadt &nbsp;|&nbsp;
+            <Link href="#" color="inherit" underline="hover">Impressum</Link>
+            &nbsp;|&nbsp;
+            <Link href="#" color="inherit" underline="hover">Datenschutz</Link>
+            &nbsp;|&nbsp;
+            <Link href="#" color="inherit" underline="hover">Barrierefreiheit</Link>
+          </Typography>
+          <Typography variant="caption" color="text.disabled">
+            Portal Version 4.0.0 &nbsp;·&nbsp; React + Material UI &nbsp;·&nbsp; Quarkus
+          </Typography>
+        </Box>
       </Box>
     </Box>
   )
