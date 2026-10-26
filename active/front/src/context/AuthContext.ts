@@ -3,6 +3,7 @@ import type { Role } from '@/types/domain'
 
 export interface AuthUser {
   citizenId: number
+  /** Login name shown in the header ("Angemeldet als: …"). */
   displayName?: string
   roles: Role[]
 }

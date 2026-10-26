@@ -27,6 +27,10 @@ export class BaseService {
     return (await this.client.put<T>(this.basePath + path, body, config)).data
   }
 
+  protected async patch<T, B = unknown>(path = '', body?: B, config?: AxiosRequestConfig): Promise<T> {
+    return (await this.client.patch<T>(this.basePath + path, body, config)).data
+  }
+
   protected async delete<T = void>(path = '', config?: AxiosRequestConfig): Promise<T> {
     return (await this.client.delete<T>(this.basePath + path, config)).data
   }

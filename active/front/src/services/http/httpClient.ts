@@ -4,7 +4,7 @@ import { logger } from '@/utils/logger'
 import { nullsToUndefined } from '@/utils/transform'
 import { toApiError } from '../errors/toApiError'
 import { computeBackoff, DEFAULT_RETRY, IDEMPOTENT_METHODS } from './retry'
-import { tokenStorage } from './tokenStorage'
+import { sessionStore } from './sessionStorage'
 
 type RetryableConfig = InternalAxiosRequestConfig & { __retryCount?: number }
 
@@ -35,10 +35,10 @@ export function createHttpClient(baseURL: string = env.apiBaseUrl): AxiosInstanc
     },
   })
 
-  // --- Request: attach auth token ---
+  // --- Request: identify the citizen (stateless backend contract) ---
   client.interceptors.request.use((config) => {
-    const token = tokenStorage.get()
-    if (token) config.headers.set('Authorization', `Bearer ${token}`)
+    const session = sessionStore.get()
+    if (session) config.headers.set('X-Citizen-Id', String(session.citizenId))
     return config
   })
 
@@ -65,7 +65,7 @@ export function createHttpClient(baseURL: string = env.apiBaseUrl): AxiosInstanc
     }
 
     if (apiError.kind === 'unauthorized') {
-      tokenStorage.clear()
+      sessionStore.clear()
       onUnauthorized?.()
     }
 

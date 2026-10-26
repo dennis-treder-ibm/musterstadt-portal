@@ -1,16 +1,15 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { AddressChangePage } from '@/pages/AddressChangePage'
+import { AdminPage } from '@/pages/AdminPage'
+import { DashboardPage } from '@/pages/DashboardPage'
+import { DogRegistrationPage } from '@/pages/DogRegistrationPage'
 import { LandingPage } from '@/pages/LandingPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
-import { PlaceholderPage } from '@/pages/PlaceholderPage'
-import { Role } from '@/types/domain'
+import { ParkingPermitPage } from '@/pages/ParkingPermitPage'
 import { PublicOnly, RequireAuth } from './guards'
 import { paths } from './paths'
-
-const placeholder = (title: string, description: string) => (
-  <PlaceholderPage title={title} description={description} />
-)
 
 export const routes: RouteObject[] = [
   {
@@ -21,15 +20,14 @@ export const routes: RouteObject[] = [
       {
         element: <RequireAuth />,
         children: [
-          { path: paths.dashboard, element: placeholder('Startseite', 'Statistik und letzte Aktivitäten folgen in der Komponenten-Phase.') },
-          { path: paths.parkingPermit, element: placeholder('Parkausweis beantragen', 'Das Antragsformular folgt in der Komponenten-Phase.') },
-          { path: paths.addressChange, element: placeholder('Adressänderung melden', 'Das Antragsformular folgt in der Komponenten-Phase.') },
-          { path: paths.dogRegistration, element: placeholder('Hund anmelden', 'Formular, Suche und Tabelle folgen in der Komponenten-Phase.') },
+          { path: paths.dashboard, element: <DashboardPage /> },
+          { path: paths.parkingPermit, element: <ParkingPermitPage /> },
+          { path: paths.addressChange, element: <AddressChangePage /> },
+          { path: paths.dogRegistration, element: <DogRegistrationPage /> },
+          // The REST backend only issues the Citizen role; the admin area is a static placeholder
+          // as in the legacy application, so any authenticated user may open it.
+          { path: paths.admin, element: <AdminPage /> },
         ],
-      },
-      {
-        element: <RequireAuth roles={[Role.Admin]} />,
-        children: [{ path: paths.admin, element: placeholder('Verwaltung', 'Der Admin-Bereich ist noch ein Platzhalter.') }],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

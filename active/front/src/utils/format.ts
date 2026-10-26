@@ -50,7 +50,7 @@ export const APPLICATION_TYPE_LABELS: Record<ApplicationType, string> = {
 }
 
 export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
-  [ApplicationStatus.Pending]: 'In Bearbeitung',
+  [ApplicationStatus.Pending]: 'Ausstehend',
   [ApplicationStatus.Approved]: 'Genehmigt',
   [ApplicationStatus.Rejected]: 'Abgelehnt',
 }

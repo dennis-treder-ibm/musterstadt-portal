@@ -1,37 +1,21 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
-import { authService, decodeJwtPayload, isTokenExpired, setUnauthorizedHandler, tokenStorage } from '@/services'
+import { authService, setUnauthorizedHandler } from '@/services'
+import { sessionStore, type StoredSession } from '@/services/http/sessionStorage'
 import { Role } from '@/types/domain'
 import { logger } from '@/utils/logger'
 import { AuthContext, type AuthContextValue, type AuthUser } from './AuthContext'
 
-interface JwtClaims extends Record<string, unknown> {
-  sub?: string
-  citizenId?: number
-  name?: string
-  groups?: string[] // SmallRye JWT default roles claim
-}
-
-const KNOWN_ROLES = new Set<string>(Object.values(Role))
-
-function userFromToken(token: string): AuthUser | null {
-  if (isTokenExpired(token)) return null
-  const claims = decodeJwtPayload<JwtClaims>(token)
-  if (!claims) return null
-  const citizenId = Number(claims.citizenId ?? claims.sub)
-  if (!Number.isFinite(citizenId)) return null
-  const roles = (claims.groups ?? []).filter((g): g is Role => KNOWN_ROLES.has(g))
-  return { citizenId, displayName: claims.name, roles: roles.length ? roles : [Role.Citizen] }
+/** The backend exposes no roles; every logged-in user is a citizen. */
+function toUser(session: StoredSession): AuthUser {
+  return { citizenId: session.citizenId, displayName: session.username, roles: [Role.Citizen] }
 }
 
 function restoreSession(): AuthUser | null {
-  const token = tokenStorage.get()
-  if (!token) return null
-  const restored = userFromToken(token)
-  if (!restored) tokenStorage.clear()
-  return restored
+  const session = sessionStore.get()
+  return session ? toUser(session) : null
 }
 
-/** Restores the session from a stored JWT and exposes login/logout. */
+/** Restores the session from sessionStorage and exposes login/logout. */
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(restoreSession)
 
@@ -43,12 +27,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const login = useCallback<AuthContextValue['login']>(async (username, password) => {
     const response = await authService.login({ username, password })
-    tokenStorage.set(response.accessToken)
-    setUser({
-      citizenId: response.citizenId,
-      displayName: response.displayName,
-      roles: response.roles?.length ? response.roles : [Role.Citizen],
-    })
+    const session: StoredSession = { citizenId: response.citizenId, username: response.username }
+    sessionStore.set(session)
+    setUser(toUser(session))
   }, [])
 
   const logout = useCallback<AuthContextValue['logout']>(async () => {
@@ -58,7 +39,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       // Local logout must succeed even if the server call fails.
       logger.warn('Server logout failed', { error: error instanceof Error ? error.message : 'unknown' })
     } finally {
-      tokenStorage.clear()
+      sessionStore.clear()
       setUser(null)
     }
   }, [])

@@ -1,4 +1,3 @@
-import type { Role } from '@/types/domain'
 import { BaseService } from '../http/BaseService'
 
 export interface LoginRequest {
@@ -6,18 +5,15 @@ export interface LoginRequest {
   password: string
 }
 
+/** Response of `POST /api/auth/login` (200 on success, 401 with `success: false` otherwise). */
 export interface AuthResponse {
-  accessToken: string
+  success: boolean
+  message?: string
   citizenId: number
-  displayName?: string
-  roles?: Role[]
+  username: string
 }
 
-/**
- * Authentication endpoints. The backend contract is not implemented yet
- * (architecture.md 3.1 describes the legacy session login); the path below is
- * the assumed Quarkus endpoint and may be adjusted once the API exists.
- */
+/** Authentication endpoints of the stateless REST backend. */
 class AuthService extends BaseService {
   constructor() {
     super('/auth')

@@ -38,7 +38,7 @@ describe('App', () => {
 
   it('redirects anonymous users from protected routes to login', async () => {
     renderApp('/parking')
-    expect(await screen.findByRole('heading', { name: 'Anmeldung' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Anmeldung am Bürgerportal' })).toBeInTheDocument()
   })
 
   it('shows 404 for unknown routes', async () => {

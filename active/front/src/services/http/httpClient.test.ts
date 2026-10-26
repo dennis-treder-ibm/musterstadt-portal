@@ -2,7 +2,7 @@ import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from 'ax
 import { AxiosError } from 'axios'
 import { ApiError } from '../errors/ApiError'
 import { createHttpClient, setUnauthorizedHandler } from './httpClient'
-import { tokenStorage } from './tokenStorage'
+import { sessionStore } from './sessionStorage'
 
 function ok(config: InternalAxiosRequestConfig, data: unknown): AxiosResponse {
   return { data, status: 200, statusText: 'OK', headers: {}, config }
@@ -15,18 +15,19 @@ function fail(config: InternalAxiosRequestConfig, status: number, data?: unknown
 
 describe('httpClient', () => {
   beforeEach(() => {
-    tokenStorage.clear()
+    sessionStore.clear()
     setUnauthorizedHandler(null)
     vi.useFakeTimers()
   })
   afterEach(() => vi.useRealTimers())
 
-  it('adds the bearer token and converts null to undefined', async () => {
-    tokenStorage.set('tkn')
+  it('sends the X-Citizen-Id header (no bearer token) and converts null to undefined', async () => {
+    sessionStore.set({ citizenId: 7, username: 'buerger' })
     const adapter = vi.fn<AxiosAdapter>(async (config) => ok(config, { a: null, b: 1 }))
     const client = createHttpClient('/api')
     const res = await client.get('/x', { adapter })
-    expect(adapter.mock.calls[0]![0].headers.get('Authorization')).toBe('Bearer tkn')
+    expect(adapter.mock.calls[0]![0].headers.get('X-Citizen-Id')).toBe('7')
+    expect(adapter.mock.calls[0]![0].headers.get('Authorization')).toBeFalsy()
     expect(res.data).toEqual({ a: undefined, b: 1 })
   })
 
@@ -52,13 +53,19 @@ describe('httpClient', () => {
     expect(calls).toBe(1)
   })
 
-  it('clears token and notifies on 401', async () => {
-    tokenStorage.set('tkn')
+  it('omits X-Citizen-Id when logged out', async () => {
+    const adapter = vi.fn<AxiosAdapter>(async (config) => ok(config, {}))
+    await createHttpClient('/api').get('/x', { adapter })
+    expect(adapter.mock.calls[0]![0].headers.get('X-Citizen-Id')).toBeFalsy()
+  })
+
+  it('clears the session and notifies on 401', async () => {
+    sessionStore.set({ citizenId: 1, username: 'buerger' })
     const handler = vi.fn()
     setUnauthorizedHandler(handler)
     const adapter: AxiosAdapter = async (config) => fail(config, 401)
     await expect(createHttpClient('/api').get('/x', { adapter })).rejects.toMatchObject({ kind: 'unauthorized' })
-    expect(tokenStorage.get()).toBeNull()
+    expect(sessionStore.get()).toBeNull()
     expect(handler).toHaveBeenCalledOnce()
   })
 })

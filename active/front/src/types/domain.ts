@@ -38,7 +38,8 @@ export interface Citizen {
 
 export interface Application {
   id: number
-  citizenId: number
+  /** Not part of the REST payload (the owning citizen is lazily loaded server-side). */
+  citizenId?: number
   type: ApplicationType
   status: ApplicationStatus
   createdDate: string
@@ -56,7 +57,7 @@ export interface ParkingPermit {
 
 export interface DogRegistration {
   id: number
-  citizenId: number
+  citizenId?: number
   dogName: string
   breed?: string
   registrationDate: string
