@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="de">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="pageTitle">Adressänderung</ui:define>
+
+    <ui:define name="content">
+
+        <div style="padding: 15px;">
+
+            <!-- Page heading -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                    <td>
+                        <h2 style="margin: 0; font-size: 16px; color: #003399;
+                                   border-bottom: 2px solid #003399; padding-bottom: 5px;">
+                            Adressänderung beantragen
+                        </h2>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size: 12px; color: #333333; margin: 0 0 12px 0;">
+                Bitte geben Sie Ihre neue Adresse ein. Der Antrag wird nach Prüfung bearbeitet.
+                Sie erhalten eine Benachrichtigung per Post an Ihre bisherige Adresse.
+            </p>
+
+            <!-- Legal notice box -->
+            <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                   style="border-color: #ffdd88; background: #fffbee; border-collapse: collapse; margin-bottom: 14px;">
+                <tr>
+                    <td style="font-size: 11px; color: #886600;">
+                        <strong>Rechtlicher Hinweis:</strong> Gemäß § 17 Bundesmeldegesetz (BMG) sind Sie verpflichtet,
+                        sich innerhalb von zwei Wochen nach dem Einzug anzumelden. Eine verspätete Anmeldung
+                        kann mit einem Bußgeld von bis zu 1.000,00 € geahndet werden.
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Success message -->
+            <h:panelGroup rendered="#{not empty addressChangeBean.successMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #88cc88; background: #eeffee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 12px; color: #005500;">
+                            <h:outputText value="#{addressChangeBean.successMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- Error message — no ARIA, red inline style -->
+            <h:panelGroup rendered="#{not empty addressChangeBean.errorMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #cc8888; background: #ffeeee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 11px; color: red;">
+                            <h:outputText value="#{addressChangeBean.errorMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- ============================================================
+                 ADDRESS CHANGE FORM
+                 ============================================================ -->
+            <h:form id="addressForm">
+
+                <table width="600" border="1" cellpadding="6" cellspacing="0"
+                       style="border-collapse: collapse; border-color: #cccccc; margin-bottom: 15px; font-size: 12px;">
+                    <thead>
+                        <tr style="background: linear-gradient(#e0e8ff, #c8d8ff);">
+                            <th colspan="2" style="text-align: left; padding: 8px 10px; color: #003399; font-size: 13px;">
+                                Neue Adresse eingeben
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- Street -->
+                        <tr style="background: #ffffff;">
+                            <td width="220" style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="addressForm:street">Straße: *</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="street"
+                                             value="#{addressChangeBean.street}"
+                                             size="40"
+                                             maxlength="200"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                                <h:message for="street" style="color: red; font-size: 11px; display: block;" />
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- House number -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="addressForm:houseNumber">Hausnummer:</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="houseNumber"
+                                             value="#{addressChangeBean.houseNumber}"
+                                             size="10"
+                                             maxlength="20"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Postcode -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="addressForm:postcode">Postleitzahl: *</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="postcode"
+                                             value="#{addressChangeBean.postcode}"
+                                             size="10"
+                                             maxlength="10"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                                <h:message for="postcode" style="color: red; font-size: 11px; display: block;" />
+                                <!-- Error text: "Postleitzahl ungültig" — shown on submit failure -->
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- City -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="addressForm:city">Ort: *</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="city"
+                                             value="#{addressChangeBean.city}"
+                                             size="40"
+                                             maxlength="100"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;" />
+                                <h:message for="city" style="color: red; font-size: 11px; display: block;" />
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Required fields note -->
+                        <tr style="background: #fafafa;">
+                            <td colspan="2" style="padding: 4px 10px; border: 1px solid #cccccc;
+                                                   font-size: 10px; color: #888888;">
+                                * Pflichtfelder
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Buttons -->
+                        <tr style="background: #f0f4ff;">
+                            <td colspan="2" style="padding: 10px; border: 1px solid #cccccc; text-align: right;">
+                                <h:commandButton value="Änderung beantragen"
+                                                 action="#{addressChangeBean.validateAndSubmit}"
+                                                 style="background: #003399; color: #ffffff; border: 1px solid #001166;
+                                                        padding: 4px 18px; font-size: 12px; cursor: pointer;" />
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </h:form>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="10"></td></tr></table>
+
+            <!-- ============================================================
+                 PENDING APPLICATIONS TABLE
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                             Meine Adressänderungs-Anträge
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <h:dataTable value="#{addressChangeBean.allApplications}"
+                         var="app"
+                         width="100%"
+                         border="1"
+                         cellpadding="6"
+                         cellspacing="0"
+                         style="border-collapse: collapse; border-color: #cccccc; font-size: 12px;"
+                         headerClass="tableHeader"
+                         rowClasses="tableRowEven, tableRowOdd">
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Antrags-Nr.</span>
+                    </f:facet>
+                    <h:outputText value="#{app.id}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Neue Adresse</span>
+                    </f:facet>
+                    <h:outputText value="#{app.notes}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Datum</span>
+                    </f:facet>
+                    <h:outputText value="#{app.createdDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"
+                                           timeZone="Europe/Berlin" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Status</span>
+                    </f:facet>
+                    <h:outputText value="#{app.statusDisplay}"
+                                  style="#{app.status.name() == 'APPROVED' ? 'color: #006600; font-weight: bold;' :
+                                           app.status.name() == 'REJECTED' ? 'color: #cc0000; font-weight: bold;' :
+                                           'color: #cc6600; font-weight: bold;'}" />
+                </h:column>
+
+            </h:dataTable>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="15"></td></tr></table>
+
+            <!-- Help box -->
+            <table width="100%" border="0" cellpadding="8" cellspacing="0"
+                   style="background: #f8f8f8; border: 1px solid #dddddd; font-size: 11px; color: #555555;">
+                <tr>
+                    <td>
+                        <p style="margin: 0; font-weight: bold;">Benötigte Unterlagen:</p>
+                        <table border="0" cellpadding="2" cellspacing="0" style="margin-top: 6px;">
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Personalausweis oder Reisepass</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Wohnungsgeberbestätigung (Vermieterbescheinigung)</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Bei Umzug aus dem Ausland: zusätzliche Dokumente erforderlich</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

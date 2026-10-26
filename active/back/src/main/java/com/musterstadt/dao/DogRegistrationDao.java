@@ -2,17 +2,16 @@ package com.musterstadt.dao;
 
 import com.musterstadt.model.DogRegistration;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@ApplicationScoped
+@Stateless
 public class DogRegistrationDao {
 
-    @Inject
-    EntityManager em;
+    @PersistenceContext(unitName = "BuergerportalPU")
+    private EntityManager em;
 
     // TODO: Add pagination support
     @SuppressWarnings("unchecked")
@@ -53,13 +52,11 @@ public class DogRegistrationDao {
                 .getResultList();
     }
 
-    @Transactional
     public DogRegistration save(DogRegistration registration) {
         em.persist(registration);
         return registration;
     }
 
-    @Transactional
     public DogRegistration update(DogRegistration registration) {
         return em.merge(registration);
     }

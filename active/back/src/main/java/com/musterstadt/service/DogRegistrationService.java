@@ -5,25 +5,23 @@ import com.musterstadt.dao.DogRegistrationDao;
 import com.musterstadt.model.Citizen;
 import com.musterstadt.model.DogRegistration;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-@ApplicationScoped
+@Stateless
 public class DogRegistrationService {
 
     private static final Logger LOGGER = Logger.getLogger(DogRegistrationService.class.getName());
 
-    @Inject
-    DogRegistrationDao dogRegistrationDao;
+    @EJB
+    private DogRegistrationDao dogRegistrationDao;
 
-    @Inject
-    CitizenDao citizenDao;
+    @EJB
+    private CitizenDao citizenDao;
 
-    @Transactional
     public DogRegistration register(Long citizenId, String dogName, String breed, String chipNumber) {
         // TODO: Validate chip number format (15-digit ISO 11784)
         if (dogName == null || dogName.trim().isEmpty()) {
@@ -42,7 +40,6 @@ public class DogRegistrationService {
         return reg;
     }
 
-    @Transactional
     public DogRegistration update(Long citizenId, Long registrationId, String dogName, String breed) {
         // TODO: Add environmental permit support for certain breeds
         DogRegistration reg = dogRegistrationDao.findByCitizenId(citizenId).stream()

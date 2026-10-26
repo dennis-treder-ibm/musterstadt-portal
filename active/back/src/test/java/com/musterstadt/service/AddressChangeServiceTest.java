@@ -1,8 +1,8 @@
 package com.musterstadt.service;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for AddressChangeService.validatePostcode().
@@ -11,22 +11,22 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class AddressChangeServiceTest {
 
-    // Instantiate directly — no container needed for this method
+    // Instantiate directly — no EJB container needed for this method
     private final AddressChangeService service = new AddressChangeService();
 
     @Test
-    void validFiveDigitPostcodeReturnsTrue() {
-        assertTrue(service.validatePostcode("80331"), "80331 ist eine gültige Postleitzahl");
+    public void validFiveDigitPostcodeReturnsTrue() {
+        assertTrue("80331 ist eine gültige Postleitzahl", service.validatePostcode("80331"));
     }
 
     @Test
-    void fourDigitPostcodeReturnsFalse() {
-        assertFalse(service.validatePostcode("8033"), "4-stellige PLZ darf nicht akzeptiert werden");
+    public void fourDigitPostcodeReturnsFalse() {
+        assertFalse("4-stellige PLZ darf nicht akzeptiert werden", service.validatePostcode("8033"));
     }
 
     @Test
-    void nullPostcodeReturnsFalse() {
-        assertFalse(service.validatePostcode(null), "Null-PLZ darf nicht akzeptiert werden");
+    public void nullPostcodeReturnsFalse() {
+        assertFalse("Null-PLZ darf nicht akzeptiert werden", service.validatePostcode(null));
     }
 
     // NOTE: No test for non-numeric strings like "ABCDE" — the service incorrectly

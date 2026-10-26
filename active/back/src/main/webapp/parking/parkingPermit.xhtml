@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="de">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="pageTitle">Parkausweis</ui:define>
+
+    <ui:define name="content">
+
+        <div style="padding: 15px;">
+
+            <!-- Page heading -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                    <td>
+                        <h2 style="margin: 0; font-size: 16px; color: #003399;
+                                   border-bottom: 2px solid #003399; padding-bottom: 5px;">
+                            Parkausweis beantragen
+                        </h2>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size: 12px; color: #333333; margin: 0 0 12px 0;">
+                Mit diesem Formular können Sie einen Parkausweis für Ihr Fahrzeug beantragen.
+                Bitte füllen Sie alle Pflichtfelder aus und reichen Sie den Nachweis ein.
+            </p>
+
+            <!-- Success message -->
+            <h:panelGroup rendered="#{not empty parkingPermitBean.successMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #88cc88; background: #eeffee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 12px; color: #005500;">
+                            <h:outputText value="#{parkingPermitBean.successMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- Error message — inline red, no accessible role -->
+            <h:panelGroup rendered="#{not empty parkingPermitBean.errorMessage}">
+                <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                       style="border-color: #cc8888; background: #ffeeee; border-collapse: collapse; margin-bottom: 12px;">
+                    <tr>
+                        <td style="font-size: 11px; color: red;">
+                            <h:outputText value="#{parkingPermitBean.errorMessage}" />
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <!-- ============================================================
+                 APPLICATION FORM
+                 Full-page postback on every action — no AJAX
+                 ============================================================ -->
+            <h:form id="parkingForm">
+
+                <table width="600" border="1" cellpadding="6" cellspacing="0"
+                       style="border-collapse: collapse; border-color: #cccccc; margin-bottom: 15px; font-size: 12px;">
+                    <thead>
+                        <tr style="background: linear-gradient(#e0e8ff, #c8d8ff);">
+                            <th colspan="2" style="text-align: left; padding: 8px 10px; color: #003399; font-size: 13px;">
+                                Antragsformular: Parkausweis
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- Vehicle Registration -->
+                        <tr style="background: #ffffff;">
+                            <td width="220" style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="parkingForm:vehicleRegistration">
+                                    Fahrzeugkennzeichen:
+                                </label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="vehicleRegistration"
+                                             value="#{parkingPermitBean.vehicleRegistration}"
+                                             size="20"
+                                             maxlength="20"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;
+                                                    text-transform: uppercase;" />
+                                <span style="font-size: 10px; color: #888888;">&#160;(mind. 5 Zeichen)</span>
+                            </td>
+                        </tr>
+
+                        <!-- Spacer row -->
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Zone selection -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="parkingForm:zone">Parkzone:</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:selectOneMenu id="zone"
+                                                 value="#{parkingPermitBean.zone}"
+                                                 style="font-size: 12px; border: 1px solid #999999;">
+                                    <f:selectItem itemLabel="— Bitte wählen —" itemValue="" />
+                                    <f:selectItems value="#{parkingPermitBean.availableZones}"
+                                                   var="z"
+                                                   itemLabel="#{z}"
+                                                   itemValue="#{z}" />
+                                </h:selectOneMenu>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Proof document path -->
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <label for="parkingForm:proofDocumentPath">Nachweisdokument (Pfad):</label>
+                            </td>
+                            <td style="padding: 6px 10px; border: 1px solid #cccccc;">
+                                <h:inputText id="proofDocumentPath"
+                                             value="#{parkingPermitBean.proofDocumentPath}"
+                                             size="40"
+                                             maxlength="500"
+                                             style="font-size: 12px; border: 1px solid #999999; padding: 2px;"
+                                             placeholder="/uploads/nachweis.pdf" />
+                                <br/>
+                                <span style="font-size: 10px; color: #888888;">
+                                    Dateipfad des Nachweisdokuments (optional). Kein Upload — nur Pfadeingabe.
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #f8f8f8;">
+                            <td colspan="2" style="padding: 3px;"></td>
+                        </tr>
+
+                        <!-- Buttons -->
+                        <tr style="background: #f0f4ff;">
+                            <td colspan="2" style="padding: 10px; border: 1px solid #cccccc; text-align: right;">
+                                <h:commandButton value="Antrag einreichen"
+                                                 action="#{parkingPermitBean.submitApplication}"
+                                                 style="background: #003399; color: #ffffff; border: 1px solid #001166;
+                                                        padding: 4px 18px; font-size: 12px; cursor: pointer;
+                                                        margin-right: 8px;" />
+                                <h:commandButton value="Zurücksetzen"
+                                                 action="#{parkingPermitBean.clearForm}"
+                                                 immediate="true"
+                                                 style="background: #888888; color: #ffffff; border: 1px solid #555555;
+                                                        padding: 4px 18px; font-size: 12px; cursor: pointer;" />
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </h:form>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="10"></td></tr></table>
+
+            <!-- ============================================================
+                 ALL PARKING APPLICATIONS TABLE
+                 Shows all applications in the system — no filtering
+                 ============================================================ -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                             Meine Parkausweis-Anträge
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <h:dataTable value="#{parkingPermitBean.allApplications}"
+                         var="app"
+                         width="100%"
+                         border="1"
+                         cellpadding="6"
+                         cellspacing="0"
+                         style="border-collapse: collapse; border-color: #cccccc; font-size: 12px;"
+                         headerClass="tableHeader"
+                         rowClasses="tableRowEven, tableRowOdd">
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Antrags-Nr.</span>
+                    </f:facet>
+                    <h:outputText value="#{app.id}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Datum</span>
+                    </f:facet>
+                    <h:outputText value="#{app.createdDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"
+                                           timeZone="Europe/Berlin" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Status</span>
+                    </f:facet>
+                    <h:outputText value="#{app.statusDisplay}"
+                                  style="#{app.status.name() == 'APPROVED' ? 'color: #006600; font-weight: bold;' :
+                                           app.status.name() == 'REJECTED' ? 'color: #cc0000; font-weight: bold;' :
+                                           'color: #cc6600; font-weight: bold;'}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Zuletzt geändert</span>
+                    </f:facet>
+                    <h:outputText value="#{app.lastUpdated}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"
+                                           timeZone="Europe/Berlin" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span style="color: #003399;">Notizen</span>
+                    </f:facet>
+                    <h:outputText value="#{app.notes}" />
+                </h:column>
+
+            </h:dataTable>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="10"></td></tr></table>
+
+            <!-- Status legend -->
+            <table border="0" cellpadding="4" cellspacing="0" style="font-size: 11px; margin-top: 5px;">
+                <tr>
+                    <td style="padding-right: 20px;">
+                        <span style="color: #cc6600; font-weight: bold;">&#9632;</span>
+                        Ausstehend
+                    </td>
+                    <td style="padding-right: 20px;">
+                        <span style="color: #006600; font-weight: bold;">&#9632;</span>
+                        Genehmigt
+                    </td>
+                    <td>
+                        <span style="color: #cc0000; font-weight: bold;">&#9632;</span>
+                        Abgelehnt
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="15"></td></tr></table>
+
+            <!-- Zone info table — static, hardcoded -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; font-size: 13px; margin: 0 0 8px 0; color: #003399;">
+                            Parkzonen-Übersicht
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <table border="1" cellpadding="6" cellspacing="0"
+                   style="border-collapse: collapse; border-color: #cccccc; font-size: 12px;">
+                <thead>
+                    <tr style="background: #e0e8ff;">
+                        <th style="padding: 6px 12px; color: #003399; border: 1px solid #999999;">Zone</th>
+                        <th style="padding: 6px 12px; color: #003399; border: 1px solid #999999;">Bereich</th>
+                        <th style="padding: 6px 12px; color: #003399; border: 1px solid #999999;">Gebühr / Jahr</th>
+                        <th style="padding: 6px 12px; color: #003399; border: 1px solid #999999;">Bemerkung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ffffff;">
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Zone A</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Wohngebiete Nord</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">30,00 &#8364;</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">24h gültig</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Zone B</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Wohngebiete Süd</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">30,00 &#8364;</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">24h gültig</td>
+                    </tr>
+                    <tr style="background: #ffffff;">
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Zone C</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Gewerbegebiet</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">45,00 &#8364;</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Werktags 07–19 Uhr</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Innenstadt</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Innenstadtkern</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">120,00 &#8364;</td>
+                        <td style="padding: 6px 12px; border: 1px solid #cccccc;">Begrenzte Anzahl verfügbar</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Spacer -->
+            <table width="100%" border="0"><tr><td height="20"></td></tr></table>
+
+            <!-- Help text — redundant nesting for alignment -->
+            <table width="100%" border="0" cellpadding="8" cellspacing="0"
+                   style="background: #f8f8f8; border: 1px solid #dddddd; font-size: 11px; color: #555555;">
+                <tr>
+                    <td>
+                        <p style="margin: 0; font-weight: bold;">Hinweise zur Antragstellung:</p>
+                        <table border="0" cellpadding="2" cellspacing="0" style="margin-top: 6px;">
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Der Antrag wird innerhalb von 5 Werktagen bearbeitet.</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Bei Fragen wenden Sie sich an die Zulassungsstelle (Tel. 089-12345-100).</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Der Parkausweis gilt ab dem Datum der Genehmigung für 12 Monate.</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">&#8226;</td>
+                                <td>Eine rückwirkende Genehmigung ist nicht möglich.</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

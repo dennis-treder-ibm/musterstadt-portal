@@ -4,17 +4,16 @@ import com.musterstadt.model.Application;
 import com.musterstadt.model.Application.ApplicationType;
 import com.musterstadt.model.Application.ApplicationStatus;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@ApplicationScoped
+@Stateless
 public class ApplicationDao {
 
-    @Inject
-    EntityManager em;
+    @PersistenceContext(unitName = "BuergerportalPU")
+    private EntityManager em;
 
     // TODO: Add pagination support
     @SuppressWarnings("unchecked")
@@ -67,7 +66,6 @@ public class ApplicationDao {
                 .getResultList();
     }
 
-    @Transactional
     public Application save(Application application) {
         if (application.getId() == null) {
             em.persist(application);
@@ -77,7 +75,6 @@ public class ApplicationDao {
         }
     }
 
-    @Transactional
     public Application update(Application application) {
         return em.merge(application);
     }

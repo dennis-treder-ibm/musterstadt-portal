@@ -4,12 +4,11 @@ import com.musterstadt.model.*;
 import com.musterstadt.model.Application.ApplicationStatus;
 import com.musterstadt.model.Application.ApplicationType;
 
-import io.quarkus.runtime.StartupEvent;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -18,16 +17,19 @@ import java.util.logging.Logger;
  * Fires on startup and seeds the database with realistic German test data.
  * Uses JPA directly — no DAO layer here to avoid circular dependency during startup.
  */
-@ApplicationScoped
+@Singleton
+@Startup
 public class DataInitializer {
 
     private static final Logger LOGGER = Logger.getLogger(DataInitializer.class.getName());
 
-    @Inject
-    EntityManager em;
+    @PersistenceContext(unitName = "BuergerportalPU")
+    private EntityManager em;
 
-    @Transactional
-    void onStart(@Observes StartupEvent event) {
+    @PostConstruct
+    public void init() {
+        createSchema();
+
         long count = (Long) em.createQuery("SELECT COUNT(c) FROM Citizen c").getSingleResult();
         if (count > 0) {
             LOGGER.info("DataInitializer: Daten bereits vorhanden, überspringe Seed.");
@@ -134,5 +136,68 @@ public class DataInitializer {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, -days);
         return cal.getTime();
+    }
+
+    /**
+     * Creates the schema via native DDL. Called after the component context is
+     * fully live, so Liberty provides a real connection (not a stub).
+     * hbm2ddl.auto=none prevents Hibernate from attempting this at SessionFactory
+     * init time when only a GenericConnection stub is available.
+     */
+    private void createSchema() {
+        // Drop in reverse FK order
+        em.createNativeQuery("DROP TABLE IF EXISTS DOG_REGISTRATION").executeUpdate();
+        em.createNativeQuery("DROP TABLE IF EXISTS PARKING_PERMIT").executeUpdate();
+        em.createNativeQuery("DROP TABLE IF EXISTS APPLICATION").executeUpdate();
+        em.createNativeQuery("DROP TABLE IF EXISTS CITIZEN").executeUpdate();
+
+        em.createNativeQuery(
+            "CREATE TABLE CITIZEN (" +
+            "  ID BIGINT AUTO_INCREMENT PRIMARY KEY," +
+            "  FIRST_NAME VARCHAR(100) NOT NULL," +
+            "  LAST_NAME VARCHAR(100) NOT NULL," +
+            "  STREET VARCHAR(200)," +
+            "  HOUSE_NUMBER VARCHAR(20)," +
+            "  POSTCODE VARCHAR(10)," +
+            "  CITY VARCHAR(100)," +
+            "  EMAIL VARCHAR(200)," +
+            "  PHONE VARCHAR(50)," +
+            "  REGISTERED_DATE DATE" +
+            ")").executeUpdate();
+
+        em.createNativeQuery(
+            "CREATE TABLE APPLICATION (" +
+            "  ID BIGINT AUTO_INCREMENT PRIMARY KEY," +
+            "  CITIZEN_ID BIGINT NOT NULL," +
+            "  TYPE VARCHAR(20) NOT NULL," +
+            "  STATUS VARCHAR(20) NOT NULL," +
+            "  CREATED_DATE DATE NOT NULL," +
+            "  LAST_UPDATED DATE," +
+            "  NOTES VARCHAR(500)," +
+            "  FOREIGN KEY (CITIZEN_ID) REFERENCES CITIZEN(ID)" +
+            ")").executeUpdate();
+
+        em.createNativeQuery(
+            "CREATE TABLE PARKING_PERMIT (" +
+            "  ID BIGINT AUTO_INCREMENT PRIMARY KEY," +
+            "  APPLICATION_ID BIGINT NOT NULL UNIQUE," +
+            "  VEHICLE_REGISTRATION VARCHAR(20) NOT NULL," +
+            "  ZONE VARCHAR(50)," +
+            "  PROOF_DOCUMENT_PATH VARCHAR(500)," +
+            "  FOREIGN KEY (APPLICATION_ID) REFERENCES APPLICATION(ID)" +
+            ")").executeUpdate();
+
+        em.createNativeQuery(
+            "CREATE TABLE DOG_REGISTRATION (" +
+            "  ID BIGINT AUTO_INCREMENT PRIMARY KEY," +
+            "  CITIZEN_ID BIGINT NOT NULL," +
+            "  DOG_NAME VARCHAR(100) NOT NULL," +
+            "  BREED VARCHAR(100)," +
+            "  REGISTRATION_DATE DATE NOT NULL," +
+            "  CHIP_NUMBER VARCHAR(50)," +
+            "  FOREIGN KEY (CITIZEN_ID) REFERENCES CITIZEN(ID)" +
+            ")").executeUpdate();
+
+        LOGGER.info("DataInitializer: Schema erstellt.");
     }
 }
