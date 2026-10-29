@@ -9,6 +9,17 @@ export default defineConfig(({ mode }) => {
   // REST backend port (the Quarkus service used 9080; see README). Override with VITE_API_PROXY_TARGET.
   const apiTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:9080'
 
+  // The browser calls Vite (same-origin) and Vite forwards to the backend. Drop the browser's
+  // `Origin` header so the backend's CORS filter does not reject it (e.g. 127.0.0.1 vs localhost → 403).
+  const apiProxy = {
+    target: apiTarget,
+    changeOrigin: true,
+    secure: false,
+    configure: (proxy: { on: (event: 'proxyReq', cb: (req: { removeHeader: (name: string) => void }) => void) => void }) => {
+      proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'))
+    },
+  }
+
   return {
     plugins: [react()],
     resolve: {
@@ -35,18 +46,14 @@ export default defineConfig(({ mode }) => {
       // Same-origin proxy: the browser talks to Vite, Vite forwards /api to Quarkus,
       // so no CORS preflight is needed during development.
       proxy: {
-        '/api': {
-          target: apiTarget,
-          changeOrigin: true,
-          secure: false,
-        },
+        '/api': apiProxy,
       },
     },
     preview: {
       host: '127.0.0.1',
       port: 4173,
       proxy: {
-        '/api': { target: apiTarget, changeOrigin: true, secure: false },
+        '/api': apiProxy,
       },
     },
     test: {
