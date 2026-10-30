@@ -1,2 +1,26 @@
 .bob
 .secrets
+
+# Maven build output
+target/
+
+# Node dependencies & build output
+node_modules/
+dist/
+
+# Java compiled classes and archives
+*.class
+*.jar
+*.war
+
+# Playwright generated output
+**/playwright-report/
+**/test-results/
+
+# Backup and temp files
+*.bak
+*.tmp
+
+# Generated/derived files
+ui-modernization-options.json
+build-metrics.json
