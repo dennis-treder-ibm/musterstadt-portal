@@ -1,7 +1,5 @@
 .bob
 .secrets
-.vscode
-*/.vscode
 
 # Maven build output
 target/
