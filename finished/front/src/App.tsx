@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import('@/pages/Dashboard/DashboardPage'));
 const ParkingPermitPage = lazy(() => import('@/pages/Parking/ParkingPermitPage'));
 const AddressChangePage = lazy(() => import('@/pages/Address/AddressChangePage'));
 const DogRegistrationPage = lazy(() => import('@/pages/Dogs/DogRegistrationPage'));
+const FloodAssistancePage = lazy(() => import('@/pages/Flood/FloodAssistancePage'));
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
                           <Route path="parking" element={<ParkingPermitPage />} />
                           <Route path="address" element={<AddressChangePage />} />
                           <Route path="dogs" element={<DogRegistrationPage />} />
+                          <Route path="flood" element={<FloodAssistancePage />} />
                           <Route path="*" element={<Navigate to="/dashboard" replace />} />
                         </Routes>
                       </AppShell>

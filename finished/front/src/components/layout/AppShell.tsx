@@ -15,7 +15,6 @@ import {
   SideNavMenuItem,
   Content,
   Theme,
-  Tag,
   Breadcrumb,
   BreadcrumbItem,
 } from '@carbon/react';
@@ -24,6 +23,7 @@ import {
   Car,
   Home,
   User,
+  Warning,
   Logout,
   Light,
   Moon,
@@ -45,6 +45,7 @@ const NAV_ITEMS = [
   { path: '/parking', label: 'Parkausweis', icon: Car },
   { path: '/address', label: 'Adressänderung', icon: Home },
   { path: '/dogs', label: 'Hundeanmeldung', icon: User },
+  { path: '/flood', label: 'Hochwasserhilfe', icon: Warning },
 ];
 
 const THEME_ICONS: Record<ThemeMode, React.ElementType> = {
@@ -150,20 +151,6 @@ export default function AppShell({ children }: AppShellProps) {
                 {item.label}
               </SideNavMenuItem>
             ))}
-            <div
-              style={{
-                padding: '0.75rem 1rem',
-                opacity: 0.6,
-                cursor: 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-              title="Demnächst verfügbar"
-            >
-              <span style={{ fontSize: '0.875rem' }}>Hochwasserhilfe</span>
-              <Tag type="warm-gray" size="sm">Demnächst</Tag>
-            </div>
           </SideNavMenu>
 
           <div

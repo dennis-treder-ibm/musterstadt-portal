@@ -146,6 +146,7 @@ public class DataInitializer {
     private void createSchema() {
         // Drop in reverse FK order
         em.createNativeQuery("DROP TABLE IF EXISTS DOG_REGISTRATION").executeUpdate();
+        em.createNativeQuery("DROP TABLE IF EXISTS FLOOD_ASSISTANCE").executeUpdate();
         em.createNativeQuery("DROP TABLE IF EXISTS PARKING_PERMIT").executeUpdate();
         em.createNativeQuery("DROP TABLE IF EXISTS APPLICATION").executeUpdate();
         em.createNativeQuery("DROP TABLE IF EXISTS CITIZEN").executeUpdate();
@@ -195,6 +196,17 @@ public class DataInitializer {
             "  REGISTRATION_DATE DATE NOT NULL," +
             "  CHIP_NUMBER VARCHAR(50)," +
             "  FOREIGN KEY (CITIZEN_ID) REFERENCES CITIZEN(ID)" +
+            ")").executeUpdate();
+
+        em.createNativeQuery(
+            "CREATE TABLE FLOOD_ASSISTANCE (" +
+            "  ID BIGINT AUTO_INCREMENT PRIMARY KEY," +
+            "  APPLICATION_ID BIGINT NOT NULL UNIQUE," +
+            "  DAMAGE_DESCRIPTION VARCHAR(500) NOT NULL," +
+            "  AFFECTED_STREET VARCHAR(200) NOT NULL," +
+            "  POSTCODE VARCHAR(5) NOT NULL," +
+            "  SEVERITY_LEVEL VARCHAR(10) NOT NULL," +
+            "  FOREIGN KEY (APPLICATION_ID) REFERENCES APPLICATION(ID)" +
             ")").executeUpdate();
 
         LOGGER.info("DataInitializer: Schema erstellt.");

@@ -31,13 +31,17 @@ export interface Citizen {
 // ── Application (shared) ──────────────────────────────────────────────────────
 
 export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-export type ApplicationType = 'PARKING' | 'ADDRESS' | 'DOG';
+export type ApplicationType = 'PARKING' | 'ADDRESS' | 'DOG' | 'FLOOD';
+export type FloodSeverityLevel = 'LEICHT' | 'MITTEL' | 'SCHWER';
 
 export interface Application {
   id: number;
   citizenId: number;
+  citizenName?: string;
   type: ApplicationType;
+  typeDisplay?: string;
   status: ApplicationStatus;
+  statusDisplay?: string;
   createdDate: string;
   lastUpdated?: string;
   notes?: string;
@@ -81,6 +85,22 @@ export interface RegisterDogRequest {
   dogName: string;
   breed?: string;
   chipNumber?: string;
+}
+
+// ── Flood Assistance ───────────────────────────────────────────────────────────
+
+export interface FloodApplication extends Application {
+  damageDescription?: string;
+  affectedStreet?: string;
+  postcode?: string;
+  severityLevel?: FloodSeverityLevel;
+}
+
+export interface CreateFloodRequest {
+  damageDescription: string;
+  affectedStreet: string;
+  postcode: string;
+  severityLevel: FloodSeverityLevel;
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────────────
