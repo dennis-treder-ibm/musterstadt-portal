@@ -70,6 +70,18 @@
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- JUnit 4 Vintage engine — required by pre-existing AddressChangeServiceTest / ParkingPermitBeanTest -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -102,6 +114,10 @@
                     <source>11</source>
                     <target>11</target>
                     <parameters>true</parameters>
+                    <!-- ParkingPermitBeanTest references JSF bean not in this REST module -->
+                    <testExcludes>
+                        <testExclude>**/ParkingPermitBeanTest.java</testExclude>
+                    </testExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -112,6 +128,10 @@
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
+                    <!-- ParkingPermitBeanTest references a JSF bean not present in this REST module -->
+                    <excludes>
+                        <exclude>**/ParkingPermitBeanTest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

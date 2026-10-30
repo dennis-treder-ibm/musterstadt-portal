@@ -8,7 +8,7 @@ import java.util.Date;
 public class Application {
 
     public enum ApplicationType {
-        PARKING, ADDRESS, DOG
+        PARKING, ADDRESS, DOG, FLOOD
     }
 
     public enum ApplicationStatus {
@@ -93,6 +93,7 @@ public class Application {
             case PARKING: return "Parkausweis";
             case ADDRESS: return "Adressänderung";
             case DOG: return "Hundeanmeldung";
+            case FLOOD: return "Hochwasserhilfe";
             default: return type.name();
         }
     }

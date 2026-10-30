@@ -11,6 +11,7 @@
         <class>com.musterstadt.model.Application</class>
         <class>com.musterstadt.model.ParkingPermit</class>
         <class>com.musterstadt.model.DogRegistration</class>
+        <class>com.musterstadt.model.FloodAssistance</class>
 
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
 

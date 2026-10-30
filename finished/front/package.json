@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "dev": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/typescript/lib/tsc.js -b && node node_modules/vite/bin/vite.js build",
+    "lint": "node node_modules/oxlint/bin/oxlint.js",
+    "preview": "node node_modules/vite/bin/vite.js preview"
   },
   "dependencies": {
     "@carbon/react": "^1.118.0",
