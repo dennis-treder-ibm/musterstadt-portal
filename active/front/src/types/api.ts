@@ -1,105 +1,33 @@
-// ── Auth ─────────────────────────────────────────────────────────────────────
-
-export interface LoginRequest {
-  username: string;
-  password: string;
+/** Field-level validation problem reported by the backend. */
+export interface FieldError {
+  field: string
+  message: string
 }
 
-export interface LoginResponse {
-  token: string;
-  citizenId: number;
-  citizenName: string;
-  message: string;
+/**
+ * Error payload shapes accepted from the Quarkus backend. Both the custom
+ * `{ message, code, errors }` contract and the Quarkus/Hibernate Validator
+ * `{ title, detail, violations }` problem format are understood.
+ */
+export interface ApiErrorBody {
+  message?: string
+  title?: string
+  detail?: string
+  code?: string
+  status?: number
+  errors?: ReadonlyArray<Partial<FieldError>>
+  violations?: ReadonlyArray<Partial<FieldError>>
 }
 
-// ── Citizen ───────────────────────────────────────────────────────────────────
-
-export interface Citizen {
-  id: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  street?: string;
-  houseNumber?: string;
-  postcode?: string;
-  city?: string;
-  email?: string;
-  phone?: string;
-  registeredDate?: string;
+/** Generic paginated result (backend DAOs currently lack pagination - see TECHNICAL_DEBT.md). */
+export interface PageResult<T> {
+  items: T[]
+  page: number
+  pageSize: number
+  totalItems: number
 }
 
-// ── Application (shared) ──────────────────────────────────────────────────────
-
-export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-export type ApplicationType = 'PARKING' | 'ADDRESS' | 'DOG';
-
-export interface Application {
-  id: number;
-  citizenId: number;
-  type: ApplicationType;
-  status: ApplicationStatus;
-  createdDate: string;
-  lastUpdated?: string;
-  notes?: string;
-}
-
-// ── Parking ────────────────────────────────────────────────────────────────────
-
-export interface ParkingApplication extends Application {
-  vehicleRegistration?: string;
-  zone?: string;
-  proofDocumentPath?: string;
-}
-
-export interface CreateParkingRequest {
-  vehicleRegistration: string;
-  zone: string;
-  proofDocumentPath?: string;
-}
-
-// ── Address ────────────────────────────────────────────────────────────────────
-
-export interface AddressChangeRequest {
-  street: string;
-  houseNumber?: string;
-  postcode: string;
-  city: string;
-}
-
-// ── Dog ────────────────────────────────────────────────────────────────────────
-
-export interface DogRegistration {
-  id: number;
-  citizenId: number;
-  dogName: string;
-  breed?: string;
-  registrationDate: string;
-  chipNumber?: string;
-}
-
-export interface RegisterDogRequest {
-  dogName: string;
-  breed?: string;
-  chipNumber?: string;
-}
-
-// ── Dashboard ──────────────────────────────────────────────────────────────────
-
-export interface DashboardData {
-  citizenId: number;
-  totalApplications: number;
-  pendingCount: number;
-  approvedCount: number;
-  rejectedCount: number;
-  parkingPermitCount: number;
-  addressChangeCount: number;
-  dogRegistrationCount: number;
-  recentApplications: Application[];
-}
-
-// ── API error ──────────────────────────────────────────────────────────────────
-
-export interface ApiError {
-  error: string;
-  status?: number;
+export interface PageQuery {
+  page?: number
+  pageSize?: number
 }

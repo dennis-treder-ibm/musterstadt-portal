@@ -7,23 +7,22 @@ import com.musterstadt.model.Application.ApplicationStatus;
 import com.musterstadt.model.Application.ApplicationType;
 import com.musterstadt.model.Citizen;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-@ApplicationScoped
+@Stateless
 public class AddressChangeService {
 
     private static final Logger LOGGER = Logger.getLogger(AddressChangeService.class.getName());
 
-    @Inject
-    ApplicationDao applicationDao;
+    @EJB
+    private ApplicationDao applicationDao;
 
-    @Inject
-    CitizenDao citizenDao;
+    @EJB
+    private CitizenDao citizenDao;
 
     // TODO: Improve accessibility of error messages
 
@@ -31,7 +30,6 @@ public class AddressChangeService {
      * Submits an address change application.
      * Validation is inline — classic legacy anti-pattern.
      */
-    @Transactional
     public Application submitChange(Long citizenId, String newStreet, String newHouseNumber,
                                     String newPostcode, String newCity) {
         if (!validatePostcode(newPostcode)) {

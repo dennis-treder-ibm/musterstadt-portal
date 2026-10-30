@@ -1,56 +1,62 @@
-import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { InlineNotification, Button, Stack } from '@carbon/react';
+import { Component, type ErrorInfo, type ReactNode } from 'react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import { logger } from '@/utils/logger'
 
 interface Props {
-  children: ReactNode;
-  fallbackTitle?: string;
+  children: ReactNode
+  /** Custom fallback renderer; receives a `reset` callback. */
+  fallback?: (reset: () => void) => ReactNode
+  /** Changing any of these values resets the boundary (e.g. the route path). */
+  resetKeys?: ReadonlyArray<unknown>
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
 }
 
+/** Catches render-time errors of the subtree and shows a friendly fallback. */
 export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null };
+  override state: State = { hasError: false }
+
+  static getDerivedStateFromError(): State {
+    return { hasError: true }
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  override componentDidCatch(error: Error, info: ErrorInfo): void {
+    logger.error('Unhandled UI error', { message: error.message, componentStack: info.componentStack ?? undefined })
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  override componentDidUpdate(prev: Props): void {
+    const changed =
+      this.state.hasError &&
+      (prev.resetKeys?.length !== this.props.resetKeys?.length ||
+        prev.resetKeys?.some((key, i) => !Object.is(key, this.props.resetKeys?.[i])))
+    if (changed) this.reset()
   }
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: null });
-  };
+  private reset = (): void => this.setState({ hasError: false })
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '2rem' }}>
-          <Stack gap={5}>
-            <InlineNotification
-              kind="error"
-              title={this.props.fallbackTitle ?? 'Ein unerwarteter Fehler ist aufgetreten'}
-              subtitle={this.state.error?.message || 'Bitte versuchen Sie es erneut oder wenden Sie sich an die Stadtverwaltung.'}
-              lowContrast
-              hideCloseButton
-            />
-            <div>
-              <Button size="sm" kind="tertiary" onClick={this.handleReset}>
-                Erneut versuchen
-              </Button>
-            </div>
-          </Stack>
-        </div>
-      );
-    }
+  override render(): ReactNode {
+    if (!this.state.hasError) return this.props.children
+    if (this.props.fallback) return this.props.fallback(this.reset)
 
-    return this.props.children;
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={this.reset}>
+              Erneut versuchen
+            </Button>
+          }
+        >
+          <AlertTitle>Etwas ist schiefgelaufen</AlertTitle>
+          Dieser Bereich konnte nicht angezeigt werden. Bitte versuchen Sie es erneut.
+        </Alert>
+      </Box>
+    )
   }
 }

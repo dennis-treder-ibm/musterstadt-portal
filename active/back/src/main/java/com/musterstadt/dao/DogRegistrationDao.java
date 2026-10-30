@@ -2,13 +2,12 @@ package com.musterstadt.dao;
 
 import com.musterstadt.model.DogRegistration;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@ApplicationScoped
+@Stateless
 public class DogRegistrationDao {
 
     @PersistenceContext(unitName = "BuergerportalPU")
@@ -53,13 +52,11 @@ public class DogRegistrationDao {
                 .getResultList();
     }
 
-    @Transactional
     public DogRegistration save(DogRegistration registration) {
         em.persist(registration);
         return registration;
     }
 
-    @Transactional
     public DogRegistration update(DogRegistration registration) {
         return em.merge(registration);
     }

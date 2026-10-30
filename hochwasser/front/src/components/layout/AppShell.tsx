@@ -15,7 +15,6 @@ import {
   SideNavMenuItem,
   Content,
   Theme,
-  Tag,
   Breadcrumb,
   BreadcrumbItem,
 } from '@carbon/react';
@@ -24,6 +23,7 @@ import {
   Car,
   Home,
   User,
+  Warning,
   Logout,
   Light,
   Moon,
@@ -45,6 +45,7 @@ const NAV_ITEMS = [
   { path: '/parking', label: 'Parkausweis', icon: Car },
   { path: '/address', label: 'Adressänderung', icon: Home },
   { path: '/dogs', label: 'Hundeanmeldung', icon: User },
+  { path: '/flood', label: 'Hochwasserhilfe', icon: Warning, disabled: true },
 ];
 
 const THEME_ICONS: Record<ThemeMode, React.ElementType> = {
@@ -101,7 +102,7 @@ export default function AppShell({ children }: AppShellProps) {
         />
         <HeaderName prefix="Bürgerportal">Musterstadt</HeaderName>
         <HeaderNavigation aria-label="Hauptnavigation">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.filter((item) => !item.disabled).map((item) => (
             <HeaderMenuItem
               key={item.path}
               isCurrentPage={location.pathname === item.path}
@@ -140,30 +141,27 @@ export default function AppShell({ children }: AppShellProps) {
       >
         <SideNavItems>
           <SideNavMenu title="Online-Dienste" defaultExpanded>
-            {NAV_ITEMS.map((item) => (
-              <SideNavMenuItem
-                key={item.path}
-                isActive={location.pathname === item.path}
-                as={Link}
-                to={item.path}
-              >
-                {item.label}
-              </SideNavMenuItem>
-            ))}
-            <div
-              style={{
-                padding: '0.75rem 1rem',
-                opacity: 0.6,
-                cursor: 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-              title="Demnächst verfügbar"
-            >
-              <span style={{ fontSize: '0.875rem' }}>Hochwasserhilfe</span>
-              <Tag type="warm-gray" size="sm">Demnächst</Tag>
-            </div>
+            {NAV_ITEMS.map((item) =>
+              item.disabled ? (
+                <SideNavMenuItem
+                  key={item.path}
+                  isActive={false}
+                  aria-disabled="true"
+                  style={{ opacity: 0.5, cursor: 'default', pointerEvents: 'none' }}
+                >
+                  {item.label} <span style={{ fontSize: '0.7rem' }}>(Demnächst verfügbar)</span>
+                </SideNavMenuItem>
+              ) : (
+                <SideNavMenuItem
+                  key={item.path}
+                  isActive={location.pathname === item.path}
+                  as={Link}
+                  to={item.path}
+                >
+                  {item.label}
+                </SideNavMenuItem>
+              )
+            )}
           </SideNavMenu>
 
           <div

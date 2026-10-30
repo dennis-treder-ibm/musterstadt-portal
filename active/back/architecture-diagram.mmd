@@ -1,101 +1,109 @@
 flowchart TD
-classDef viewLayer fill:#001141,stroke:#4589ff,stroke-width:2px
-classDef controllerLayer fill:#081a1c,stroke:#009d9a,stroke-width:2px
-classDef modelLayer fill:#2a0a18,stroke:#ee5396,stroke-width:2px
+    classDef viewLayer fill:#d0e2ff,stroke:#0f62fe,stroke-width:2px
+    classDef controllerLayer fill:#d9fbfb,stroke:#007d79,stroke-width:2px
+    classDef modelLayer fill:#ffd6e8,stroke:#d02670,stroke-width:2px
 
-subgraph view["View / UI Layer — JSF Facelets"]
-    loginXhtml["login.xhtml"]:::viewLayer
-    dashboardXhtml["dashboard.xhtml"]:::viewLayer
-    parkingXhtml["parkingPermit.xhtml"]:::viewLayer
-    addressXhtml["addressChange.xhtml"]:::viewLayer
-    dogXhtml["dogRegistration.xhtml"]:::viewLayer
-    layoutXhtml["layout.xhtml — Facelets template"]:::viewLayer
-    facesConfig["faces-config.xml — Navigation rules"]:::viewLayer
-end
+    subgraph view["View/UI Layer - Facelets XHTML"]
+        loginXhtml["login.xhtml\nAnmeldung am Bürgerportal"]:::viewLayer
+        dashboardXhtml["dashboard.xhtml\nStartseite - Übersicht"]:::viewLayer
+        parkingXhtml["parkingPermit.xhtml\nParkausweis beantragen"]:::viewLayer
+        addressXhtml["addressChange.xhtml\nAdressänderung melden"]:::viewLayer
+        dogXhtml["dogRegistration.xhtml\nHundeanmeldung"]:::viewLayer
+        layoutXhtml["layout.xhtml\nFacelets Master Template"]:::viewLayer
+        loginForm["loginForm\nh:inputText + h:inputSecret"]:::viewLayer
+        parkingForm["parkingForm\nvehicleRegistration + zone + proofPath"]:::viewLayer
+        addressForm["addressForm\nstreet + houseNumber + postcode + city"]:::viewLayer
+        dogForm["dogForm\ndogName + breed + chipNumber"]:::viewLayer
+        searchForm["searchForm\nsearchQuery - PrimeFaces p:dataTable"]:::viewLayer
+    end
 
-subgraph controller["Controller / Service Layer — JSF Beans and EJB Services"]
-    loginBean["LoginBean — SessionScoped"]:::controllerLayer
-    dashboardBean["DashboardBean — RequestScoped"]:::controllerLayer
-    parkingBean["ParkingPermitBean — SessionScoped"]:::controllerLayer
-    addressBean["AddressChangeBean — RequestScoped"]:::controllerLayer
-    dogBean["DogRegistrationBean — RequestScoped"]:::controllerLayer
-    parkingService["ParkingPermitService — EJB Stateless"]:::controllerLayer
-    addressService["AddressChangeService — EJB Stateless"]:::controllerLayer
-    dogService["DogRegistrationService — EJB Stateless"]:::controllerLayer
-    registryService["CitizenRegistryService — SOAP stub"]:::controllerLayer
-    dataInit["DataInitializer — EJB Singleton Startup"]:::controllerLayer
-end
+    subgraph controller["Controller/Service Layer - EJB Stateless Beans"]
+        loginBean["LoginBean\nSessionScoped\nlogin - logout"]:::controllerLayer
+        dashboardBean["DashboardBean\nRequestScoped\ngetParkingPermitCount\ngetDogRegistrationCount\ngetOpenApplicationCount\ngetRecentActivity"]:::controllerLayer
+        parkingBean["ParkingPermitBean\nSessionScoped\nsubmitApplication\nclearForm\ngetAvailableZones"]:::controllerLayer
+        addressBean["AddressChangeBean\nRequestScoped\nvalidateAndSubmit\ngetAllApplications"]:::controllerLayer
+        dogBean["DogRegistrationBean\nRequestScoped\nregisterDog\nsearch\nclearSearch"]:::controllerLayer
+        parkingService["ParkingPermitService\nStateless EJB\ncreateApplication\nupdateApplication\ngetZones"]:::controllerLayer
+        addressService["AddressChangeService\nStateless EJB\nsubmitChange\nvalidatePostcode"]:::controllerLayer
+        dogService["DogRegistrationService\nStateless EJB\nregister\nupdate\nsearch"]:::controllerLayer
+        citizenService["CitizenRegistryService\nStateless EJB\nlookupCitizen - SOAP stub"]:::controllerLayer
+    end
 
-subgraph model["Model / Data Layer — JPA and Database"]
-    appDao["ApplicationDao — EJB Stateless"]:::modelLayer
-    citizenDao["CitizenDao — EJB Stateless"]:::modelLayer
-    parkingDao["ParkingPermitDao — EJB Stateless"]:::modelLayer
-    dogDao["DogRegistrationDao — EJB Stateless"]:::modelLayer
-    citizenEntity["Citizen — JPA Entity"]:::modelLayer
-    applicationEntity["Application — JPA Entity PENDING APPROVED REJECTED"]:::modelLayer
-    parkingEntity["ParkingPermit — JPA Entity"]:::modelLayer
-    dogEntity["DogRegistration — JPA Entity"]:::modelLayer
-    db[("H2 In-Memory DB\njdbc/buergerportal\nCITIZEN / APPLICATION\nPARKING_PERMIT / DOG_REGISTRATION")]:::modelLayer
-end
+    subgraph model["Model/Data Layer - JPA + H2"]
+        citizenDao["CitizenDao\nStateless EJB\nfindById\nfindByLastName\nsave - update"]:::modelLayer
+        applicationDao["ApplicationDao\nStateless EJB\nfindByCitizenId\ncountByCitizenAndStatus\ncountByCitizenAndType\nsave - update"]:::modelLayer
+        parkingDao["ParkingPermitDao\nStateless EJB\nfindByApplicationId\nfindByZone\nsave - update"]:::modelLayer
+        dogDao["DogRegistrationDao\nStateless EJB\nfindByCitizenId\nsearchByNameOrBreedForCitizen\nsave - update"]:::modelLayer
+        citizenEntity["Citizen Entity\nID - FIRST_NAME - LAST_NAME\nSTREET - POSTCODE - CITY\nEMAIL - PHONE"]:::modelLayer
+        applicationEntity["Application Entity\nID - CITIZEN_ID\nTYPE - STATUS\nCREATED_DATE - NOTES"]:::modelLayer
+        parkingEntity["ParkingPermit Entity\nID - APPLICATION_ID\nVEHICLE_REGISTRATION - ZONE\nPROOF_DOCUMENT_PATH"]:::modelLayer
+        dogEntity["DogRegistration Entity\nID - CITIZEN_ID\nDOG_NAME - BREED\nREGISTRATION_DATE - CHIP_NUMBER"]:::modelLayer
+        db[("H2 In-Memory Database\njdbc/buergerportal\nBuergerportalPU")]:::modelLayer
+        dataInit["DataInitializer\nSingleton Startup EJB\nSchema creation\nSeed data"]:::modelLayer
+    end
 
-subgraph legend["Legend"]
-    viewExample["View / UI Components"]:::viewLayer
-    controllerExample["Controller / Service Components"]:::controllerLayer
-    modelExample["Model / Data Components"]:::modelLayer
-end
+    loginXhtml --> loginForm
+    loginForm -->|"action: login - logout"| loginBean
+    loginBean -->|"outcome: dashboard"| dashboardXhtml
+    loginBean -->|"outcome: loginFailed"| loginXhtml
+    dashboardXhtml --> layoutXhtml
+    dashboardXhtml -->|"EL binding"| dashboardBean
+    dashboardXhtml -->|"quick link"| parkingXhtml
+    dashboardXhtml -->|"quick link"| addressXhtml
+    dashboardXhtml -->|"quick link"| dogXhtml
 
-loginXhtml --> loginBean
-loginBean -- "outcome: dashboard" --> facesConfig
-loginBean -- "outcome: loginFailed" --> facesConfig
-facesConfig --> dashboardXhtml
-facesConfig --> loginXhtml
+    parkingXhtml --> layoutXhtml
+    parkingXhtml --> parkingForm
+    parkingForm -->|"action: submitApplication - clearForm"| parkingBean
+    parkingBean -->|"@ManagedProperty"| loginBean
+    parkingBean -->|"@EJB"| parkingService
+    parkingBean -->|"outcome: parkingSuccess"| parkingXhtml
 
-dashboardXhtml --> dashboardBean
-dashboardBean --> appDao
-dashboardBean --> parkingDao
-dashboardBean --> dogDao
+    addressXhtml --> layoutXhtml
+    addressXhtml --> addressForm
+    addressForm -->|"action: validateAndSubmit"| addressBean
+    addressBean -->|"@ManagedProperty"| loginBean
+    addressBean -->|"@EJB"| addressService
+    addressBean -->|"outcome: addressSuccess"| addressXhtml
 
-dashboardXhtml -- "navigate" --> parkingXhtml
-dashboardXhtml -- "navigate" --> addressXhtml
-dashboardXhtml -- "navigate" --> dogXhtml
+    dogXhtml --> layoutXhtml
+    dogXhtml --> dogForm
+    dogXhtml --> searchForm
+    dogForm -->|"action: registerDog"| dogBean
+    searchForm -->|"action: search - clearSearch"| dogBean
+    dogBean -->|"@ManagedProperty"| loginBean
+    dogBean -->|"@EJB"| dogService
+    dogBean -->|"outcome: dogSuccess"| dogXhtml
 
-parkingXhtml --> parkingBean
-parkingBean --> parkingService
-parkingService --> citizenDao
-parkingService --> appDao
-parkingService --> parkingDao
-parkingDao --> parkingEntity
-parkingEntity --> db
-db --> parkingEntity
-parkingEntity --> parkingDao
+    dashboardBean -->|"@ManagedProperty"| loginBean
+    dashboardBean -->|"@EJB"| applicationDao
+    dashboardBean -->|"@EJB"| parkingDao
+    dashboardBean -->|"@EJB"| dogDao
 
-addressXhtml --> addressBean
-addressBean --> addressService
-addressService --> citizenDao
-addressService --> appDao
+    parkingService -->|"@EJB"| citizenDao
+    parkingService -->|"@EJB"| applicationDao
+    parkingService -->|"@EJB"| parkingDao
 
-dogXhtml --> dogBean
-dogBean --> dogService
-dogService --> citizenDao
-dogService --> dogDao
-dogDao --> dogEntity
-dogEntity --> db
-db --> dogEntity
-dogEntity --> dogDao
+    addressService -->|"@EJB"| citizenDao
+    addressService -->|"@EJB"| applicationDao
 
-appDao --> applicationEntity
-applicationEntity --> db
-db --> applicationEntity
-applicationEntity --> appDao
+    dogService -->|"@EJB"| citizenDao
+    dogService -->|"@EJB"| dogDao
 
-citizenDao --> citizenEntity
-citizenEntity --> db
-db --> citizenEntity
-citizenEntity --> citizenDao
+    citizenDao -->|"EntityManager"| citizenEntity
+    applicationDao -->|"EntityManager"| applicationEntity
+    parkingDao -->|"EntityManager"| parkingEntity
+    dogDao -->|"EntityManager"| dogEntity
 
-dataInit --> db
+    citizenEntity --> db
+    applicationEntity --> db
+    parkingEntity --> db
+    dogEntity --> db
 
-layoutXhtml --> dashboardXhtml
-layoutXhtml --> parkingXhtml
-layoutXhtml --> addressXhtml
-layoutXhtml --> dogXhtml
+    dataInit -->|"native DDL + JPA persist"| db
+
+    subgraph legend["Legend"]
+        viewExample["View/UI Components"]:::viewLayer
+        controllerExample["Controller/Service Components"]:::controllerLayer
+        modelExample["Model/Data Components"]:::modelLayer
+    end

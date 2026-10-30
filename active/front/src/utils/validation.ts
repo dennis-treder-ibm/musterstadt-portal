@@ -1,89 +1,67 @@
 /**
- * Validation utilities conforming to Bürgerportal Musterstadt business rules
- * documented in architecture.md (§4).
+ * Client-side validators mirroring the backend rules in architecture.md section 4.
+ * They only improve UX; the Quarkus backend remains the source of truth.
+ * Each validator returns an error message (German) or `undefined` when valid.
  */
+export type Validator<T = string> = (value: T) => string | undefined
 
-export interface ValidationResult {
-  isValid: boolean;
-  errors: Record<string, string>;
+export const required =
+  (message = 'Dieses Feld ist erforderlich.'): Validator =>
+  (value) =>
+    value.trim() === '' ? message : undefined
+
+export const minLength =
+  (min: number, message = `Mindestens ${min} Zeichen erforderlich.`): Validator =>
+  (value) =>
+    value.trim().length < min ? message : undefined
+
+export const exactLength =
+  (length: number, message = `Genau ${length} Zeichen erforderlich.`): Validator =>
+  (value) =>
+    value.trim().length !== length ? message : undefined
+
+export const maxLength =
+  (max: number, message = `Höchstens ${max} Zeichen erlaubt.`): Validator =>
+  (value) =>
+    value.trim().length > max ? message : undefined
+
+export const matches =
+  (pattern: RegExp, message: string): Validator =>
+  (value) =>
+    pattern.test(value.trim()) ? undefined : message
+
+/** Runs validators in order and returns the first error. */
+export function compose<T = string>(...validators: Array<Validator<T>>): Validator<T> {
+  return (value) => {
+    for (const validate of validators) {
+      const error = validate(value)
+      if (error) return error
+    }
+    return undefined
+  }
 }
 
-export function validateRequired(value: string | undefined | null, fieldName: string): string | null {
-  if (!value || value.trim().length === 0) {
-    return `${fieldName} ist ein Pflichtfeld.`;
+/** Validates a record of values against per-field validators; returns only fields with errors. */
+export function validateForm<T extends Record<string, string>>(
+  values: T,
+  rules: { [K in keyof T]?: Validator },
+): Partial<Record<keyof T, string>> {
+  const errors: Partial<Record<keyof T, string>> = {}
+  for (const key of Object.keys(rules) as Array<keyof T>) {
+    const error = rules[key]?.(values[key] ?? '')
+    if (error) errors[key] = error
   }
-  return null;
+  return errors
 }
 
-export function validateVehicleRegistration(val: string): string | null {
-  const trimmed = val.trim();
-  if (!trimmed) {
-    return 'Bitte geben Sie ein Fahrzeugkennzeichen ein.';
-  }
-  if (trimmed.length < 5) {
-    return 'Das Fahrzeugkennzeichen muss mindestens 5 Zeichen lang sein.';
-  }
-  if (trimmed.length > 20) {
-    return 'Das Fahrzeugkennzeichen darf maximal 20 Zeichen lang sein.';
-  }
-  return null;
-}
+/* ---- Domain rules (architecture.md section 4) ---- */
 
-export function normalizeVehicleRegistration(val: string): string {
-  return val.trim().toUpperCase();
-}
+/** Parking: vehicle registration >= 5 characters. */
+export const vehicleRegistration = compose(required(), minLength(5, 'Das Kennzeichen muss mindestens 5 Zeichen lang sein.'))
 
-export function validateZone(val: string): string | null {
-  if (!val || val.trim().length === 0) {
-    return 'Bitte wählen Sie eine Parkzone aus.';
-  }
-  return null;
-}
+/** Address: German postcode (PLZ), 5 digits. Stricter than the legacy length-only check (see TECHNICAL_DEBT). */
+export const postcode = compose(required(), matches(/^\d{5}$/, 'Die Postleitzahl muss aus genau 5 Ziffern bestehen.'))
 
-export function validatePostcode(val: string): string | null {
-  const trimmed = val.trim();
-  if (!trimmed) {
-    return 'Bitte geben Sie eine Postleitzahl ein.';
-  }
-  if (!/^\d{5}$/.test(trimmed)) {
-    return 'Die Postleitzahl muss genau 5 Ziffern enthalten (z. B. 80331).';
-  }
-  return null;
-}
-
-export function validateDogName(val: string): string | null {
-  const trimmed = val.trim();
-  if (!trimmed) {
-    return 'Bitte geben Sie den Namen des Hundes ein.';
-  }
-  if (trimmed.length > 100) {
-    return 'Der Name darf maximal 100 Zeichen lang sein.';
-  }
-  return null;
-}
-
-export function validateChipNumber(val?: string): string | null {
-  if (!val || val.trim().length === 0) {
-    return null; // optional
-  }
-  const trimmed = val.trim();
-  if (!/^\d{15}$/.test(trimmed)) {
-    return 'Die Chip-Nummer muss genau 15 Ziffern umfassen (ISO 11784 Standard).';
-  }
-  return null;
-}
-
-export function formatDate(dateStr?: string | null): string {
-  if (!dateStr) return '—';
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return new Intl.DateTimeFormat('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(d);
-  } catch {
-    return dateStr;
-  }
-}
+/** Dog: ISO 11784 chip numbers have 15 digits; the field is optional. */
+export const chipNumber: Validator = (value) =>
+  value.trim() === '' ? undefined : matches(/^\d{15}$/, 'Die Chipnummer muss aus 15 Ziffern bestehen.')(value)

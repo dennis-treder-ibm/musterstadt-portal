@@ -1,46 +1,46 @@
 {
-  "modernizationPaths": [
-    {
-      "frontend": "React",
-      "backend": "JEE",
-      "description": "Replace JSF Facelets and EJB backing beans with a React SPA communicating over REST/JSON JAX-RS endpoints. The existing EJB services, DAOs, and JPA entities are retained with minimal change. The session bean scope problem and table-based layout disappear naturally. Optimal choice when team has existing JEE knowledge and wants to minimise backend disruption.",
-      "riskAssessment": "Medium",
-      "keyTechnicalChallenges": "Decompose JSF managed bean actions into JAX-RS endpoints; migrate faces-config navigation to React Router; replace JSF session scope with JWT or cookie-based auth; rebuild PrimeFaces data table pagination in React; establish a CORS/security filter layer between SPA and Liberty."
-    },
-    {
-      "frontend": "React",
-      "backend": "Quarkus",
-      "description": "Full platform replacement: React SPA frontend plus Quarkus RESTEasy Reactive backend replacing both JSF and the EJB container. JPA entities can be reused with Panache or as-is. Yields the most modern stack and best runtime efficiency, but requires the highest coordination effort across both layers simultaneously.",
-      "riskAssessment": "High",
-      "keyTechnicalChallenges": "Migrate EJB Stateless to Quarkus CDI beans and remove javax EJB annotations; replace JTA transactions with Quarkus transaction interceptors; port H2 datasource config from Liberty server.xml to application.properties; rework session auth to Quarkus Security with JWT; parallel frontend and backend migration increases delivery risk."
-    },
-    {
-      "frontend": "Vue.js",
-      "backend": "JEE",
-      "description": "Vue.js SPA replaces the JSF view layer while the JEE backend exposes JAX-RS endpoints reusing existing EJB services and JPA entities. Vue's Options API offers a gentler learning curve for teams accustomed to JSF's declarative style. Incremental migration possible by exposing REST endpoints alongside JSF pages during transition.",
-      "riskAssessment": "Medium",
-      "keyTechnicalChallenges": "Design RESTful API contract from existing managed bean methods; manage Vuex or Pinia state to replace JSF session-scoped bean data; adapt PrimeFaces table/pagination to Vue component library; handle multipart form posts for document path field; update Liberty CSP headers to allow SPA asset serving."
-    },
-    {
-      "frontend": "Vue.js",
-      "backend": "Quarkus",
-      "description": "Vue.js frontend with Quarkus backend. Quarkus dev services simplify the H2 datasource migration and provide hot reload during development. Suitable for teams wanting a modern JVM microservice without a full cloud-native commitment. Combined replacement of both JSF and EJB container is the primary risk.",
-      "riskAssessment": "High",
-      "keyTechnicalChallenges": "Replace javax EJB lifecycle with Quarkus CDI and ApplicationScoped services; migrate JTA-managed EntityManager to Quarkus JPA; rebuild dead SOAP CitizenRegistryService as MicroProfile REST Client; establish OpenAPI contract between Vue SPA and Quarkus endpoints; containerise both tiers for consistent deployment."
-    },
-    {
-      "frontend": "Angular",
-      "backend": "JEE",
-      "description": "Angular replaces JSF Facelets; the JEE backend exposes JAX-RS REST endpoints backed by the existing EJB services and JPA layer. Angular's opinionated structure (modules, services, forms) maps naturally onto the existing layered architecture. Preferred when the team needs strong TypeScript typing and built-in form validation to replace JSF validators.",
-      "riskAssessment": "Medium",
-      "keyTechnicalChallenges": "Map JSF managed bean validation rules to Angular Reactive Forms validators; replace faces-config navigation with Angular Router guards and canActivate auth checks; integrate Angular HttpClient with JAX-RS CORS policy on Liberty; migrate PrimeFaces p:dataTable to Angular Material or PrimeNG; adopt Angular build pipeline alongside Liberty WAR build."
-    },
-    {
-      "frontend": "Angular",
-      "backend": "Quarkus",
-      "description": "Angular frontend with Quarkus backend — the most comprehensive modernisation path. Fully removes the javax.faces, EJB, and JTA dependency chain. Results in a containerisable, GraalVM-compatible stack. High initial investment but produces the most maintainable and scalable outcome. Recommended only when the team can dedicate sustained effort to a phased migration.",
-      "riskAssessment": "Very High",
-      "keyTechnicalChallenges": "Complete removal of JSF, PrimeFaces, EJB, and JTA requires parallel rewrite of all four layers; DataInitializer startup logic must be ported to Quarkus Flyway or Liquibase migrations; Angular module federation needed for incremental strangler-fig delivery; CitizenRegistryService SOAP stub migration to MicroProfile REST Client; build, CI, and deployment pipelines need full redesign."
-    }
-  ]
+    "modernizationPaths": [
+        {
+            "frontend": "React",
+            "backend": "JEE",
+            "description": "Replace JSF Facelets and backing beans with a React SPA served separately, while retaining the existing JEE EJB service and DAO layer exposed as JAX-RS REST endpoints. Minimal disruption to proven business logic; existing JPA model, EJB services, and H2/JDBC configuration stay largely intact. React's component model maps naturally to the portal's form pages.",
+            "riskAssessment": "Medium",
+            "keyTechnicalChallenges": "Convert JSF managed beans to JAX-RS resources; replace FacesMessage/navigation outcomes with REST error contracts; migrate session-scoped ParkingPermitBean state to JWT/cookie auth; replicate inline JSF validation with React form validation; add CORS configuration for decoupled deployment."
+        },
+        {
+            "frontend": "React",
+            "backend": "Quarkus",
+            "description": "Full modernisation: rewrite the backend on Quarkus using CDI, Panache ORM, and RESTEasy Reactive, while the frontend becomes a React SPA. Quarkus offers fast startup, GraalVM native compilation, and a developer-friendly DX. Highest ROI for cloud-native deployments but requires rewriting EJBs as CDI beans and adapting JPA entities for Panache.",
+            "riskAssessment": "High",
+            "keyTechnicalChallenges": "Rewrite all EJB Stateless beans to CDI/ApplicationScoped; migrate JPA entities to Panache Active Record or Repository pattern; replace JTA/Liberty DataSource config with Quarkus datasource; implement JWT-based auth to replace HttpSession; restructure Maven build for both SPA and API modules."
+        },
+        {
+            "frontend": "Vue.js",
+            "backend": "JEE",
+            "description": "Incremental modernisation pairing Vue.js with the existing JEE backend. Vue's Options API and single-file components map closely to JSF backing bean concepts, easing the conceptual gap for JEE developers. JAX-RS endpoints added to the existing WAR expose the EJB services. Suitable when teams are familiar with JEE and want a gentle frontend transition.",
+            "riskAssessment": "Medium",
+            "keyTechnicalChallenges": "Expose EJB services as JAX-RS endpoints without breaking existing session model; replace JSF navigation outcome pattern with Vue Router; map JSF h:dataTable and PrimeFaces p:dataTable to Vue component equivalents; manage auth state with Pinia store instead of HttpSession; configure separate build pipeline for Vue assets."
+        },
+        {
+            "frontend": "Vue.js",
+            "backend": "Quarkus",
+            "description": "Modernise both layers simultaneously: Vue.js replaces the Facelets views, Quarkus replaces Liberty/EJB. Quarkus's streamlined CDI model and Panache reduce boilerplate compared to EJB. The combination yields a lightweight, reactive stack. Recommended for teams open to a clean-slate approach with modern tooling across both tiers.",
+            "riskAssessment": "High",
+            "keyTechnicalChallenges": "Migrate all four EJB DAOs and three EJB services to Quarkus CDI/Panache; replace JTA transactions with Quarkus @Transactional; rewrite session auth as Quarkus OIDC or SmallRye JWT; port Facelets form logic to Vue reactive forms; set up monorepo or multi-module build for co-located development."
+        },
+        {
+            "frontend": "Angular",
+            "backend": "JEE",
+            "description": "Replace the JSF tier with Angular while keeping the JEE backend. Angular's opinionated structure with services, dependency injection, and TypeScript mirrors EJB patterns, easing adoption for JEE developers. The existing EJBs are surfaced as JAX-RS REST endpoints. Suitable for enterprise teams already familiar with Java-style DI wanting a comparable pattern on the frontend.",
+            "riskAssessment": "Medium",
+            "keyTechnicalChallenges": "Add JAX-RS layer to existing WAR for all portal operations; implement Angular HttpClient-based service layer replacing FacesServlet postbacks; migrate PrimeFaces p:dataTable pagination to Angular Material or PrimeNG; replace JSF FacesMessages with Angular Reactive Forms error handling; configure CORS and CSRF protection for separated deployment."
+        },
+        {
+            "frontend": "Angular",
+            "backend": "Quarkus",
+            "description": "Enterprise-grade full-stack modernisation: Angular provides a strongly-typed, opinionated SPA framework, while Quarkus delivers a cloud-native Java backend with native-image support. Both frameworks emphasise strong typing and DI, making the combination coherent for large teams. This path demands the most upfront effort but yields the most modern and maintainable outcome.",
+            "riskAssessment": "Very High",
+            "keyTechnicalChallenges": "Complete rewrite of EJB layer to Quarkus CDI with Panache and RESTEasy; migrate JPA H2 config to Quarkus application.properties datasource; implement Quarkus Security or OIDC replacing HttpSession auth; map all JSF validation rules to Angular Reactive Forms validators; establish CI/CD pipeline for separate Angular build and Quarkus container image."
+        }
+    ]
 }

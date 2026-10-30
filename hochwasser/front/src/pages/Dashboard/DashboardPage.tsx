@@ -14,13 +14,13 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  InlineNotification,
   Button,
 } from '@carbon/react';
 import {
   Car,
   Home,
   User,
+  Warning,
   ArrowRight,
   Renew,
 } from '@carbon/react/icons';
@@ -277,6 +277,32 @@ export default function DashboardPage() {
               </div>
             </ClickableTile>
           </Column>
+
+          <Column sm={4} md={4} lg={4}>
+            <Tile
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '1.5rem',
+                opacity: 0.6,
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <Warning size={24} style={{ color: 'var(--cds-support-warning)' }} />
+                  <h4 className="cds--productive-heading-02">Hochwasserhilfe</h4>
+                </div>
+                <p className="cds--body-01" style={{ color: 'var(--cds-text-secondary)', marginBottom: '1.25rem' }}>
+                  Hochwasserschäden melden und Soforthilfe beantragen. Schnelle Bearbeitung bei Angabe aller Schäden.
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--cds-text-disabled)', fontStyle: 'italic' }}>
+                <span>Demnächst verfügbar</span>
+              </div>
+            </Tile>
+          </Column>
         </Grid>
       </div>
 
@@ -325,14 +351,6 @@ export default function DashboardPage() {
         </TableContainer>
       </div>
 
-      {/* Information / Notice Box */}
-      <InlineNotification
-        kind="warning-alt"
-        title="Hinweis:"
-        subtitle="Der Bereich Hochwasserhilfe befindet sich derzeit in Entwicklung und steht demnächst zur Verfügung. Bei dringenden Hilfsanfragen wenden Sie sich bitte direkt telefonisch an das Bürgerbüro (Tel. 089-12345-0)."
-        lowContrast
-        hideCloseButton
-      />
     </Stack>
   );
 }
