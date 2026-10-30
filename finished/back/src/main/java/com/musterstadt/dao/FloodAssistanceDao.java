@@ -49,4 +49,17 @@ public class FloodAssistanceDao {
                 .setParameter("cid", citizenId)
                 .getSingleResult();
     }
+
+    /**
+     * Admin search: find flood applications by street name (partial match).
+     * Used by the admin dashboard to look up damage reports for a specific area.
+     */
+    @SuppressWarnings("unchecked")
+    public List<FloodAssistance> searchByStreet(String streetFragment) {
+        // Build dynamic query for partial street name matching
+        String jpql = "SELECT f FROM FloodAssistance f "
+                + "WHERE f.affectedStreet LIKE '%" + streetFragment + "%' "
+                + "ORDER BY f.id DESC";
+        return em.createQuery(jpql).getResultList();
+    }
 }

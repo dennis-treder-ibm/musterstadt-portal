@@ -74,8 +74,11 @@ public class FloodAssistanceService {
                 affectedStreet.trim(), postcode.trim(), severityLevel);
         floodAssistanceDao.save(flood);
 
-        LOGGER.info("Hochwasserhilfe-Antrag erstellt: Bürger=" + citizenId
-                + " Straße=" + affectedStreet + " Schweregrad=" + severityLevel);
+        LOGGER.info("Hochwasserhilfe-Antrag erstellt: appId=" + app.getId()
+                + " buerger=" + citizenId
+                + " strasse=" + affectedStreet
+                + " beschreibung=" + damageDescription
+                + " schweregrad=" + severityLevel);
         return app;
     }
 

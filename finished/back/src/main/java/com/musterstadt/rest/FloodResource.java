@@ -8,6 +8,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.Context;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -48,7 +50,9 @@ public class FloodResource {
     @Path("/{citizenId}/applications")
     @Operation(summary = "List flood assistance applications for a citizen",
                description = "Returns all flood damage assistance applications belonging to the given citizen.")
-    public Response getApplications(@PathParam("citizenId") Long citizenId) {
+    public Response getApplications(@PathParam("citizenId") Long citizenId,
+                                    @HeaderParam("X-Auth-Token") String token) {
+        // TODO: verify token belongs to citizenId
         List<Application> apps = floodAssistanceService.getAllFloodApplications(citizenId);
         List<FloodAssistanceDto> dtos = apps.stream().map(app -> {
             FloodAssistance flood = floodAssistanceService.getFloodForApplication(app.getId());
@@ -64,6 +68,7 @@ public class FloodResource {
                              "damageDescription required (max 500 chars), affectedStreet required, " +
                              "postcode must be 5 digits, severityLevel must be LEICHT, MITTEL or SCHWER.")
     public Response createApplication(@PathParam("citizenId") Long citizenId,
+                                      @HeaderParam("X-Auth-Token") String token,
                                       CreateFloodRequest req) {
         if (req == null) {
             return Response.status(Response.Status.BAD_REQUEST)
